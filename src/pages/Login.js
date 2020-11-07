@@ -1,22 +1,79 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import imageMap from '../assets/images/map.png';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
+import {useDispatch} from 'react-redux'
+import {Alert} from 'react-native'
+import {
+  setLoading,
+  setAccessToken,
+  setUser,
+} from '../store/actionCreator';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const dispatch = useDispatch();
+
+  const getDataUser = async(id, token) => {
+    try {
+      const resUser = await axios.get('http://192.168.18.19:8000/v1/resources/user/'+ id, {headers : {Authorization : token}});
+      const { success, status, message, data } = resUser.data;
+
+      //dispatch(setUser(data.data));
+      alert("berhasil get data user")
+    } catch (error) {
+      console.log(error.response);
+      dispatch(setLoading(false));
+      alert(error.response)
+    }
+  }
+
+  const submit = async () => {
+    try {
+      dispatch(setLoading(true));
+      const body = {
+        email: email,
+        password: password,
+      };
+      const response = await axios.post('http://192.168.18.19:8000/v1/login', body);
+      
+      const { success, status, message, data } = response.data;
+      console.log(success, status, data)
+      //if (success === true && status === 200) {
+        //alert("berhasil get token")
+        dispatch(setAccessToken(data.token));
+        const id = data.id;
+        getDataUser(id, data.token)
+        dispatch(setLoading(false));
+      //}
+    } catch (error) {
+      console.log(error.response);
+      dispatch(setLoading(false));
+      Alert.alert("","Email dan password salah")
+    }
+  };
+
   return (
     <>
       <Container>
         <TitleApp>e-Bindalwasmin</TitleApp>
         <MapImage source={imageMap} />
-        <InputNipContainer>
-          <InputNip placeholder="NIP" placeholderTextColor="#6e34a3" />
+        <InputEmailContainer>
+          <InputEmail 
+            placeholder="Email" 
+            onChangeText = {(text)=> setEmail(text)} 
+            placeholderTextColor="#6e34a3" />
           <IconInputLeft name="account" color="#6e34a3" size={20} />
-        </InputNipContainer>
+        </InputEmailContainer>
         <InputPasswordContainer>
-          <InputNip
+          <InputEmail
             placeholder="Password"
+            onChangeText = {(text)=> setPassword(text)}
             secureTextEntry={!showPassword}
             placeholderTextColor="#6e34a3"
           />
@@ -37,7 +94,7 @@ export default function Login() {
             />
           )}
         </InputPasswordContainer>
-        <LoginButton onPress={() => console.log('Pressed')}>
+        <LoginButton onPress={()=>submit()}>
           <LoginButtonText>Login</LoginButtonText>
         </LoginButton>
         <TextInfo>Kantor Wilayah Bangka Belitung</TextInfo>
@@ -64,22 +121,22 @@ const LoginButton = styled.TouchableOpacity`
 `;
 const IconInputRight = styled(MaterialIcon)`
   position: absolute;
-  top: 18;
-  right: 20;
+  top: 18px;
+  right: 20px;
 `;
 const IconInputLeft = styled(MaterialIcon)`
   position: absolute;
-  top: 18;
-  left: 20;
+  top: 18px;
+  left: 20px;
 `;
 const InputPasswordContainer = styled.View`
   margin-bottom: 25px;
 `;
-const InputNipContainer = styled.View`
+const InputEmailContainer = styled.View`
   margin-bottom: 20px;
   margin-top: 10px;
 `;
-const InputNip = styled.TextInput`
+const InputEmail = styled.TextInput`
   background-color: #f0e6ff;
   border-radius: 50px;
   padding-left: 45px;
@@ -105,3 +162,4 @@ const MapImage = styled.Image`
   resize-mode: contain;
   margin-top: 20px;
 `;
+

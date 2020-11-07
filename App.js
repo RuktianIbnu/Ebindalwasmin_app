@@ -6,6 +6,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {Provider, useSelector} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import Login from './src/pages/Login';
+import Loading from './src/components/Loading'
 
 const Stack = createStackNavigator();
 
@@ -34,7 +35,7 @@ const Nav = () => {
           />
         </Stack.Navigator>
       </NavigationContainer>
-      {loading && <Loading />}
+      {loading && <Loading/>}
     </>
   );
 };
