@@ -1,13 +1,21 @@
 import React from 'react';
 import {StatusBar} from 'react-native';
 import {store, persistor} from './src/store/store';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Provider, useSelector} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import Login from './src/pages/Login';
 
 const Stack = createStackNavigator();
+
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'white',
+  },
+};
 
 console.disableYellowBox = true;
 
@@ -17,9 +25,13 @@ const Nav = () => {
   return (
     <>
       <StatusBar hidden={loading} />
-      <NavigationContainer>
+      <NavigationContainer theme={MyTheme}>
         <Stack.Navigator>
-          <Stack.Screen name="loading" component={Login} />
+          <Stack.Screen
+            name="login"
+            component={Login}
+            options={{headerShown: false}}
+          />
         </Stack.Navigator>
       </NavigationContainer>
       {loading && <Loading />}
