@@ -5,6 +5,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import {useDispatch} from 'react-redux'
 import {Alert} from 'react-native'
+import {BASE_URL} from '../helpers/global';
 import {
   setLoading,
   setAccessToken,
@@ -21,11 +22,11 @@ export default function Login() {
 
   const getDataUser = async(id, token) => {
     try {
-      const resUser = await axios.get('http://192.168.18.19:8000/v1/resources/user/'+ id, {headers : {Authorization : token}});
+      const resUser = await axios.get(BASE_URL+'/resources/user/'+ id, {headers : {Authorization : token}});
       const { success, status, message, data } = resUser.data;
 
       //dispatch(setUser(data.data));
-      alert("berhasil get data user")
+      Alert.alert("","berhasil get data user")
     } catch (error) {
       console.log(error.response);
       dispatch(setLoading(false));
@@ -40,7 +41,7 @@ export default function Login() {
         email: email,
         password: password,
       };
-      const response = await axios.post('http://192.168.18.19:8000/v1/login', body);
+      const response = await axios.post(BASE_URL+'/login', body);
       
       const { success, status, message, data } = response.data;
       console.log(success, status, data)
