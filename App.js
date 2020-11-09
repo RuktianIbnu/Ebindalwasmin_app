@@ -6,6 +6,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {Provider, useSelector} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import Login from './src/pages/Login';
+import Report from './src/pages/Report';
+import Home from './src/pages/Home';
 import Loading from './src/components/Loading'
 
 const Stack = createStackNavigator();
@@ -28,11 +30,9 @@ const Nav = () => {
       <StatusBar hidden={loading} />
       <NavigationContainer theme={MyTheme}>
         <Stack.Navigator>
-          <Stack.Screen
-            name="login"
-            component={Login}
-            options={{headerShown: false}}
-          />
+          <Stack.Screen name="login" component={Login} options={{headerShown: false}}/>
+          <Stack.Screen name="report" component={Report} options={{headerShown: false}}/>
+          <Stack.Screen name="home" component={Home} options={{headerShown: false}}/>
         </Stack.Navigator>
       </NavigationContainer>
       {loading && <Loading/>}
