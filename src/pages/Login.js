@@ -13,7 +13,7 @@ import {
 } from '../store/actionCreator';
 
 
-export default function Login() {
+export default function Login({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +26,7 @@ export default function Login() {
       const resUser = await axios.get(BASE_URL+'/resources/user/'+ id, {headers : {Authorization : token}});
       const { success, status, message, data } = resUser.data;
 
-      //dispatch(setUser(data.data));
+      dispatch(setUser(resUser.data));
       Alert.alert("","berhasil get data user")
     } catch (error) {
       console.log(error.response);
@@ -52,9 +52,11 @@ export default function Login() {
         const id = data.id;
         getDataUser(id, data.token)
         dispatch(setLoading(false));
+        navigation.navigate('home')
       //}
     } catch (error) {
       console.log(error.response);
+      navigation.navigate('home')
       dispatch(setLoading(false));
       Alert.alert("","Email dan password salah")
     }
