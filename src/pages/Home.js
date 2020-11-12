@@ -21,7 +21,7 @@ export default function Home({ navigation }) {
         {
             name: 'Toronto',
             population: 2800000,
-            color: '#F00',
+            color: 'green',
             legendFontColor: '#7F7F7F',
             legendFontSize: 15,
         },
@@ -35,7 +35,7 @@ export default function Home({ navigation }) {
         {
             name: 'New York',
             population: 8538000,
-            color: '#ffffff',
+            color: 'yellow',
             legendFontColor: '#7F7F7F',
             legendFontSize: 15,
         },
@@ -54,7 +54,7 @@ export default function Home({ navigation }) {
                 <TitleApp>Home Screen</TitleApp>
                 <PieChart
                     data={pieData}
-                    width={200}
+                    width={350}
                     height={200}
                     chartConfig={chartConfig}
                     accessor="population"
