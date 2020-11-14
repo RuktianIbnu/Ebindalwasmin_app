@@ -48,7 +48,7 @@ export default function Administrasi() {
         setKategori(data.data);
       }
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       dispatch(setLoading(false));
     }
   };
@@ -59,13 +59,13 @@ export default function Administrasi() {
       if (selectedKategori === '') {
         Alert.alert(null, 'Pilih Kategori terlebih dahulu');
       } else {
-        console.log('SELECTED KATEGORI', selectedKategori);
+        //console.log('SELECTED KATEGORI', selectedKategori);
         dispatch(setLoading(true));
         const headers = {
           Authorization: accessToken,
         };
         const tanggal = moment(selectedTanggal).format('YYYY-MM-DD');
-
+        setKategoriChild([])
         switch (selectedKategori) {
           case 'DOKUMEN PERJALANAN REPUBLIK INDONESIA':
             const responsePaspor = await Axios.get(
@@ -105,6 +105,7 @@ export default function Administrasi() {
             break;
 
           case 'IZIN KEIMIGRASIAN':
+            //console.log(tanggal);
             const responseIntal = await Axios.get(
               `${BASE_URL}/resources/intal-by/${tanggal}`,
               {headers},
@@ -112,10 +113,11 @@ export default function Administrasi() {
             // const {status, data} = responseIntal;
             if (responseIntal.status === 200) {
               const dataByTanggal = responseIntal.data.data;
-
+              
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'IZIN KEIMIGRASIAN') {
                   for (const kategoriItemChild of kategoriItem.child) {
+                    console.log(kategoriItem.child);
                     if (kategoriItemChild.child.length !== 0) {
                       for (const item of kategoriItemChild.child) {
                         if (dataByTanggal.length !== 0) {
@@ -217,12 +219,12 @@ export default function Administrasi() {
             );
             if (responsePNBP.status === 200) {
               const dataByTanggal = responsePNBP.data.data;
-              console.log('DATA BY TANGG', dataByTanggal);
+              //console.log('DATA BY TANGG', dataByTanggal);
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'PNBP KEIMIGRASIAN LAINNYA') {
                   for (const kategoriItemChild of kategoriItem.child) {
                     if (kategoriItemChild.child.length !== 0) {
-                      console.log('Item ada isi');
+                      //console.log('Item ada isi');
                       for (const iterator of kategoriItemChild.child) {
                         if (dataByTanggal.length !== 0) {
                           for (const itemByTanggal of dataByTanggal) {
@@ -265,7 +267,7 @@ export default function Administrasi() {
         }
       }
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     }
   };
 
