@@ -1,122 +1,297 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
+import {useSelector, useDispatch} from 'react-redux';
+import Axios from 'axios';
+import {BASE_URL} from '../helpers/global';
+import moment from 'moment';
+import {Alert} from 'react-native';
+import {setLoading} from '../store/actionCreator';
 
 export default function Administrasi() {
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
+  const [kategori, setKategori] = useState([]);
+  const [kategoriChild, setKategoriChild] = useState([]);
+  const [kategoriDropdown, setKategoriDropdown] = useState([]);
+  const [selectedKategori, setSelectedKategori] = useState('');
+  const [selectedTanggal, setSelectedTanggal] = useState(new Date(Date.now()));
+  const accessToken = useSelector((state) => state.accessToken);
+  const dispatch = useDispatch();
   const state = {
     language: 'java',
   };
+
+  useEffect(() => {
+    GetKategoriPNBP();
+  }, []);
+
+  const GetKategoriPNBP = async () => {
+    try {
+      const headers = {
+        Authorization: accessToken,
+      };
+      dispatch(setLoading(true));
+      const response = await Axios.get(`${BASE_URL}/resources/pnbp-kategori`, {
+        headers,
+      });
+      dispatch(setLoading(false));
+      const {data, status} = response;
+      if (status === 200) {
+        const kategori = data.data;
+        const kategoriArr = [];
+        for (const iterator of kategori) {
+          // console.log(iterator);
+          kategoriArr.push(iterator);
+        }
+        setKategoriDropdown(kategoriArr);
+        setKategori(data.data);
+      }
+    } catch (error) {
+      console.log(error);
+      dispatch(setLoading(false));
+    }
+  };
+
+  const GetKategoriDataByTanggal = async () => {
+    // console.log(selectedKategori, selectedTanggal);
+    try {
+      if (selectedKategori === '') {
+        Alert.alert(null, 'Pilih Kategori terlebih dahulu');
+      } else {
+        console.log('SELECTED KATEGORI', selectedKategori);
+        dispatch(setLoading(true));
+        const headers = {
+          Authorization: accessToken,
+        };
+        const tanggal = moment(selectedTanggal).format('YYYY-MM-DD');
+
+        switch (selectedKategori) {
+          case 'DOKUMEN PERJALANAN REPUBLIK INDONESIA':
+            const responsePaspor = await Axios.get(
+              `${BASE_URL}/resources/paspor-by/${tanggal}`,
+              {headers},
+            );
+            // const {status, data} = responsePaspor;
+            if (responsePaspor.status === 200) {
+              const dataByTanggal = responsePaspor.data.data;
+              for (const iterator of kategori) {
+                // console.log(iterator.child);
+                if (
+                  iterator.nama_layanan ===
+                  'DOKUMEN PERJALANAN REPUBLIK INDONESIA'
+                ) {
+                  for (const item of iterator.child) {
+                    if (dataByTanggal.length !== 0) {
+                      for (const iterator of dataByTanggal) {
+                        if (item.id === iterator.id_jenis) {
+                          item.laki = iterator.laki;
+                          item.perempuan = iterator.perempuan;
+                          item.total = iterator.total;
+                        }
+                      }
+                    } else {
+                      item.laki = 0;
+                      item.perempuan = 0;
+                      item.total = 0;
+                    }
+                  }
+                  setKategoriChild(iterator.child);
+                }
+              }
+              dispatch(setLoading(false));
+            }
+
+            break;
+
+          case 'IZIN KEIMIGRASIAN':
+            const responseIntal = await Axios.get(
+              `${BASE_URL}/resources/intal-by/${tanggal}`,
+              {headers},
+            );
+            // const {status, data} = responseIntal;
+            if (responseIntal.status === 200) {
+              const dataByTanggal = responseIntal.data.data;
+
+              for (const kategoriItem of kategori) {
+                if (kategoriItem.nama_layanan === 'IZIN KEIMIGRASIAN') {
+                  for (const kategoriItemChild of kategoriItem.child) {
+                    for (const item of kategoriItemChild.child) {
+                      if (dataByTanggal.length !== 0) {
+                        for (const itemByTanggal of dataByTanggal) {
+                          if (itemByTanggal.id_jenis === item.id) {
+                            item.laki = itemByTanggal.laki;
+                            item.perempuan = itemByTanggal.perempuan;
+                            item.total = itemByTanggal.total;
+                          }
+                        }
+                      } else {
+                        item.laki = 0;
+                        item.perempuan = 0;
+                        item.total = 0;
+                      }
+                    }
+                  }
+                  setKategoriChild(kategoriItem.child);
+                }
+              }
+
+              dispatch(setLoading(false));
+            }
+            break;
+
+          case 'VISA':
+            for (const kategoriItem of kategori) {
+              if (kategoriItem.nama_layanan === 'VISA') {
+                setKategoriChild(kategoriItem.child);
+              }
+            }
+            break;
+
+          case 'PNBP KEIMIGRASIAN LAINNYA':
+            const responsePNBP = await Axios.get(
+              `${BASE_URL}/resources/pnbp-by/${tanggal}`,
+              {headers},
+            );
+            if (responsePNBP.status === 200) {
+              const dataByTanggal = responsePNBP.data.data;
+              console.log('DATA BY TANGG', dataByTanggal);
+              for (const kategoriItem of kategori) {
+                if (kategoriItem.nama_layanan === 'PNBP KEIMIGRASIAN LAINNYA') {
+                  for (const kategoriItemChild of kategoriItem.child) {
+                    for (const item of kategoriItemChild.child) {
+                      console.log('MASIU');
+                      if (dataByTanggal.length !== 0) {
+                        for (const itemByTanggal of dataByTanggal) {
+                          if (itemByTanggal.id_jenis === item.id) {
+                            item.laki = itemByTanggal.laki;
+                            item.perempuan = itemByTanggal.perempuan;
+                            item.total = itemByTanggal.total;
+                          }
+                        }
+                      } else {
+                        item.laki = 0;
+                        item.perempuan = 0;
+                        item.total = 0;
+                      }
+                    }
+                  }
+                  setKategoriChild(kategoriItem.child);
+                }
+              }
+
+              dispatch(setLoading(false));
+            }
+            break;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Container>
         <Text>Pilih Kategori</Text>
         <PickerContainer>
           <Picker
-            selectedValue={state.language}
-            onValueChange={(itemValue, itemIndex) =>
-              this.setState({language: itemValue})
-            }>
-            <Picker.Item label="Java" value="java" />
-            <Picker.Item label="JavaScript" value="js" />
+            selectedValue={selectedKategori}
+            onValueChange={(itemValue, _) => setSelectedKategori(itemValue)}>
+            <Picker.Item value="" label="Pilih Kategori" />
+            {kategoriDropdown.map((item) => (
+              <Picker.Item
+                key={item.id}
+                label={item.nama_layanan}
+                value={item.nama_layanan}
+              />
+            ))}
           </Picker>
         </PickerContainer>
         <Row>
           <InputContainer onPress={() => setShow(!show)}>
             <>
               <Text>Tanggal</Text>
-              <DateInput editable={false} />
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={true}
-                  display="default"
-                  onChange={(event, selectedDate) =>
-                    console.log(event, selectedDate)
-                  }
-                />
-              )}
+              <DateInput
+                editable={false}
+                value={moment(selectedTanggal).format('YYYY-MM-DD')}
+              />
             </>
           </InputContainer>
           <BottonContainer>
-            <ButtonNext>
+            <ButtonNext onPress={GetKategoriDataByTanggal}>
               <ButtonLabel>Cari</ButtonLabel>
             </ButtonNext>
           </BottonContainer>
+          {show && (
+            <DateTimePicker
+              value={selectedTanggal}
+              mode="date"
+              display="calendar"
+              onChange={(event, selectedDate) => {
+                setShow(!show);
+                setSelectedTanggal(selectedDate || selectedTanggal);
+              }}
+              on
+            />
+          )}
         </Row>
-        <Category>
-          <CategoryContainer>
-            <CategoryText>1. Visa</CategoryText>
-          </CategoryContainer>
-          <ChildrenContainer>
-            <ChildrenText>a. Visa Tinggal Terbatas</ChildrenText>
-            <ChildenRow>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Total</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-            </ChildenRow>
-          </ChildrenContainer>
-        </Category>
-
-        <Category>
-          <CategoryContainer>
-            <CategoryText>1. Visa</CategoryText>
-          </CategoryContainer>
-          <ChildrenContainer>
-            <ChildrenText>a. Visa Tinggal Terbatas</ChildrenText>
-            <ChildenRow>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Total</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-            </ChildenRow>
-          </ChildrenContainer>
-        </Category>
-
-        <Category>
-          <CategoryContainer>
-            <CategoryText>1. Visa</CategoryText>
-          </CategoryContainer>
-          <ChildrenContainer>
-            <ChildrenText>a. Visa Tinggal Terbatas</ChildrenText>
-            <ChildenRow>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-              <ChildrenInputContainer>
-                <ChildrenInputLabel>Total</ChildrenInputLabel>
-                <ChildrenInput />
-              </ChildrenInputContainer>
-            </ChildenRow>
-          </ChildrenContainer>
-        </Category>
+        {kategoriChild.map((item, index) => (
+          <Category key={index}>
+            <CategoryContainer>
+              <CategoryText>
+                {index + 1}. {item.nama_layanan}
+              </CategoryText>
+            </CategoryContainer>
+            {item.child.length !== 0 ? (
+              item.child.map((itemChild, index) => (
+                <ChildrenContainer key={index}>
+                  <ChildrenText>{itemChild.nama_layanan}</ChildrenText>
+                  <ChildenRow>
+                    <ChildrenInputContainer>
+                      <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
+                      <ChildrenInput value={itemChild.laki.toString()} />
+                    </ChildrenInputContainer>
+                    <ChildrenInputContainer>
+                      <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
+                      <ChildrenInput value={itemChild.perempuan.toString()} />
+                    </ChildrenInputContainer>
+                    <ChildrenInputContainer>
+                      <ChildrenInputLabel>Total</ChildrenInputLabel>
+                      <ChildrenInput value={itemChild.total.toString()} />
+                    </ChildrenInputContainer>
+                  </ChildenRow>
+                </ChildrenContainer>
+              ))
+            ) : (
+              <ChildenRow>
+                <ChildrenInputContainer>
+                  <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
+                  <ChildrenInput
+                    onChangeText={(text) => {
+                      kategoriChild[index]['laki'] = parseInt(text);
+                      console.log(kategoriChild[index].laki);
+                    }}
+                    value={item.laki.toString()}
+                  />
+                </ChildrenInputContainer>
+                <ChildrenInputContainer>
+                  <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
+                  <ChildrenInput
+                    onChangeText={(text) => {
+                      item.perempuan = text;
+                    }}
+                    value={item.perempuan.toString()}
+                  />
+                </ChildrenInputContainer>
+                <ChildrenInputContainer>
+                  <ChildrenInputLabel>Total</ChildrenInputLabel>
+                  <ChildrenInput value={item.total.toString()} />
+                </ChildrenInputContainer>
+              </ChildenRow>
+            )}
+          </Category>
+        ))}
       </Container>
     </>
   );
@@ -142,10 +317,9 @@ const ChildrenInput = styled.TextInput`
   padding-horizontal: 8px;
 `;
 const ChildrenText = styled.Text`
-  font-size: 16px;
+  font-size: 14px;
 `;
 const ChildrenContainer = styled.View`
-  padding-horizontal: 26px;
   margin-top: 8px;
 `;
 const Category = styled.View`
@@ -155,6 +329,7 @@ const Category = styled.View`
 const CategoryText = styled.Text`
   color: #fff;
   font-size: 18px;
+  font-weight: bold;
 `;
 const CategoryContainer = styled.View`
   background-color: #0077b6;
@@ -203,6 +378,7 @@ const DateInput = styled.TextInput`
   border-color: #a1a1a1;
   width: 100%;
   padding-horizontal: 8px;
+  color: #000;
 `;
 const Text = styled.Text`
   font-weight: bold;

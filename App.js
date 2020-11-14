@@ -48,9 +48,9 @@ const Nav = () => {
   const accessToken = useSelector((state) => state.accessToken);
   return (
     <>
-      <StatusBar hidden={loading} />
+      {/* <StatusBar hidden={loading} /> */}
       <NavigationContainer theme={MyTheme}>
-        <Stack.Navigator initialRouteName="index">
+        <Stack.Navigator>
           {accessToken === null ? (
             <Stack.Screen
               name="login"
