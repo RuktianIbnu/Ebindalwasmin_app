@@ -1,47 +1,46 @@
 import styled from 'styled-components/native';
-import { View, Dimensions, StatusBar, Text } from 'react-native';
-import { TabView, SceneMap } from 'react-native-tab-view';
-import { Provider, useSelector } from 'react-redux';
+import {View, Dimensions, StatusBar, Text} from 'react-native';
+import {TabView, SceneMap} from 'react-native-tab-view';
+import {Provider, useSelector} from 'react-redux';
 import axios from 'axios';
-import { BASE_URL } from '../helpers/global';
-import React, { useRef, useState, useEffect } from 'react';
+import {BASE_URL} from '../helpers/global';
+import React, {useRef, useState, useEffect} from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
-import { StackedBarChart, XAxis, YAxis, Grid } from 'react-native-svg-charts';
+import {Picker} from '@react-native-picker/picker';
+import {StackedBarChart, XAxis, YAxis, Grid} from 'react-native-svg-charts';
 
-const initialLayout = { width: Dimensions.get('window').width };
+const initialLayout = {width: Dimensions.get('window').width};
 
-export default function Home({ navigation }) {
-    const [index, setIndex] = useState(0);
+export default function Home({navigation}) {
+  const [index, setIndex] = useState(0);
 
-    const [routes] = useState([
-        { key: 'first', title: 'Paspor' },
-        { key: 'second', title: 'Visa' },
-        { key: 'thrid', title: 'Izin Tinggal' },
-        { key: 'fourth', title: 'PNBP Lainnya' },
-    ]);
+  const [routes] = useState([
+    {key: 'first', title: 'Paspor'},
+    {key: 'second', title: 'Visa'},
+    {key: 'thrid', title: 'Izin Tinggal'},
+    {key: 'fourth', title: 'PNBP Lainnya'},
+  ]);
 
-    const renderScene = SceneMap({
-        first: FirstRoute,
-        second: SecondRoute,
-        thrid: ThridRoute,
-        fourth: FourthRoute,
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+    thrid: ThridRoute,
+    fourth: FourthRoute,
+  });
 
-    });
-
-    return (
-        <>
-            <Container>
-                <StatusBar backgroundColor="#2196f3" barStyle="light-content" />
-                <TabView
-                    navigationState={{ index, routes }}
-                    renderScene={renderScene}
-                    onIndexChange={setIndex}
-                    initialLayout={initialLayout}
-                />
-            </Container>
-        </>
-    );
+  return (
+    <>
+      <Container>
+        <StatusBar backgroundColor="#2196f3" barStyle="light-content" />
+        <TabView
+          navigationState={{index, routes}}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={initialLayout}
+        />
+      </Container>
+    </>
+  );
 }
 
 const FirstRoute = () => {
@@ -71,49 +70,48 @@ const FirstRoute = () => {
             alert(error.response)
         }
     }
+  };
 
-    const data = [
-        {
-            month: new Date(2015, 0, 1),
-            apples: 3840,
-            bananas: 1920,
-            cherries: 960,
-            dates: 400,
-            oranges: 400,
-        },
-        {
-            month: new Date(2015, 1, 1),
-            apples: 1600,
-            bananas: 1440,
-            cherries: 960,
-            dates: 400,
-        },
-        {
-            month: new Date(2015, 2, 1),
-            apples: 640,
-            bananas: 960,
-            cherries: 3640,
-            dates: 400,
-        },
-        {
-            month: new Date(2015, 3, 1),
-            apples: 3320,
-            bananas: 480,
-            cherries: 640,
-            dates: 400,
-        },
-    ]
+  const data = [
+    {
+      month: new Date(2015, 0, 1),
+      apples: 3840,
+      bananas: 1920,
+      cherries: 960,
+      dates: 400,
+      oranges: 400,
+    },
+    {
+      month: new Date(2015, 1, 1),
+      apples: 1600,
+      bananas: 1440,
+      cherries: 960,
+      dates: 400,
+    },
+    {
+      month: new Date(2015, 2, 1),
+      apples: 640,
+      bananas: 960,
+      cherries: 3640,
+      dates: 400,
+    },
+    {
+      month: new Date(2015, 3, 1),
+      apples: 3320,
+      bananas: 480,
+      cherries: 640,
+      dates: 400,
+    },
+  ];
 
-    const colors = ['#7b4173', '#a55194', '#ce6dbd', '#de9ed6'];
-    const keys = ['apples', 'bananas', 'cherries', 'dates'];
+  const colors = ['#7b4173', '#a55194', '#ce6dbd', '#de9ed6'];
+  const keys = ['apples', 'bananas', 'cherries', 'dates'];
 
-    return (
-        <>
-            <Container>
-                <Text>
-                    Paspor
-                </Text>
-                {/* <YAxis
+  return (
+    <>
+      <Container>
+        <Text>Paspor</Text>
+        {/* <YAxis
                     data={data.apples}
                     contentInset={contentInset}
                     svg={{
@@ -123,64 +121,58 @@ const FirstRoute = () => {
                     numberOfTicks={10}
                     formatLabel={(value) => `${value}ºC`}
                 /> */}
-                <StackedBarChart
-                    style={{ height: 200 }}
-                    keys={keys}
-                    colors={colors}
-                    data={data}
-                    showGrid={false}
-                    contentInset={{ top: 30, bottom: 30 }}
-                />
-                <XAxis
-                    style={{ marginHorizontal: 0 }}
-                    data={data}
-                    formatLabel={(value, index) => index}
-                    contentInset={{ left: 10, right: 10 }}
-                    svg={{ fontSize: 10, fill: 'black' }}
-                />
-            </Container>
-        </>
-    );
-}
+        <StackedBarChart
+          style={{height: 200}}
+          keys={keys}
+          colors={colors}
+          data={data}
+          showGrid={false}
+          contentInset={{top: 30, bottom: 30}}
+        />
+        <XAxis
+          style={{marginHorizontal: 0}}
+          data={data}
+          formatLabel={(value, index) => index}
+          contentInset={{left: 10, right: 10}}
+          svg={{fontSize: 10, fill: 'black'}}
+        />
+      </Container>
+    </>
+  );
+};
 
 const SecondRoute = () => {
-    return (
-        <>
-            <Container>
-                <Text>
-                    Visa
-                </Text>
-            </Container>
-        </>
-    );
-}
+  return (
+    <>
+      <Container>
+        <Text>Visa</Text>
+      </Container>
+    </>
+  );
+};
 
 const ThridRoute = () => {
-    return (
-        <>
-            <Container>
-                <Text>
-                    Izin Tinggal
-                </Text>
-            </Container>
-        </>
-    );
-}
+  return (
+    <>
+      <Container>
+        <Text>Izin Tinggal</Text>
+      </Container>
+    </>
+  );
+};
 
 const FourthRoute = () => {
-    return (
-        <>
-            <Container>
-                <Text>
-                    PNBP Lainnya
-                </Text>
-            </Container>
-        </>
-    );
-}
+  return (
+    <>
+      <Container>
+        <Text>PNBP Lainnya</Text>
+      </Container>
+    </>
+  );
+};
 
 const screenWidth = styled.View`
-    width: 100%
+  width: 100%;
 `;
 
 const ChildrenInputContainer = styled.View`
@@ -285,4 +277,3 @@ const TitleApp = styled.Text`
 const TextInfo = styled.Text`
   text-align: center;
 `;
-
