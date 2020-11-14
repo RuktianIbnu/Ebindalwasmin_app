@@ -45,21 +45,29 @@ export default function Home({ navigation }) {
 }
 
 const FirstRoute = () => {
-    const [dataPerwilayah, setdataPerwilayah] = useState([]);
     const accessToken = useSelector((state) => state.accessToken);
-    
+    const [dataPerwilayah, setDataPerwilayah] = useState([]);
+    const datwilArr = [];
+
     useEffect(() => {
         getdataPerwilayah()
     }, [])
 
     const getdataPerwilayah = async () => {
         try {
-            const resData = await axios.get(BASE_URL + '/resources/paspor-pivot-perwilayah', { headers: { Authorization: accessToken } });
-            const { success, status, message, data } = resData.data;
-            console.log(resData.data);
-            setdataPerwilayah(data);
+            const response = await axios.get(BASE_URL + '/resources/paspor-pivot-perwilayah', { headers: { Authorization: accessToken } });
+            const { status, data } = response.data;
+            if (status === 200) {
+                const datwil = data.data;
+                //console.log(datwil);
+                for (const iterator of datwil) {
+                  datwilArr.push(iterator);
+                }
+                setDataPerwilayah(data.data);
+                console.log(datwilArr);
+              }
         } catch (error) {
-            console.log(error.response);
+            //console.log(error.response);
             alert(error.response)
         }
     }
