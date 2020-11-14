@@ -1,76 +1,89 @@
-import React, { useRef, useState } from 'react';
 import styled from 'styled-components/native';
-import {
-    LineChart,
-    BarChart,
-    PieChart,
-    ProgressChart,
-    ContributionGraph,
-    StackedBarChart
-} from "react-native-chart-kit";
+import { View, Dimensions, StatusBar, Text } from 'react-native';
+import { TabView, SceneMap } from 'react-native-tab-view';
+import { Provider, useSelector } from 'react-redux';
+import axios from 'axios';
+import { BASE_URL } from '../helpers/global';
+import React, { useRef, useState, useEffect } from 'react';
+
+const FirstRoute = () => (
+    <View style={{ backgroundColor: '#ff4081', flex: 1, justifyContent: 'center' }}>
+        <Text
+            style={{
+                color: '#FFFFFF',
+                fontSize: 28,
+                textAlign: 'center',
+                fontWeight: 'bold',
+            }}>
+            Codeinsia
+      </Text>
+    </View>
+);
+const SecondRoute = () => (
+    <View style={{ backgroundColor: '#ff4081', flex: 1, justifyContent: 'center' }}>
+        <Text
+            style={{
+                color: '#FFFFFF',
+                fontSize: 28,
+                textAlign: 'center',
+                fontWeight: 'bold',
+            }}>
+            codeinsia.com
+      </Text>
+    </View>
+);
+
+const initialLayout = { width: Dimensions.get('window').width };
 
 export default function Home({ navigation }) {
-    const pieData = [
-        {
-            name: 'Seoul',
-            population: 21500000,
-            color: 'rgba(131, 167, 234, 1)',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 15,
-        },
-        {
-            name: 'Toronto',
-            population: 2800000,
-            color: 'green',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 15,
-        },
-        {
-            name: 'Beijing',
-            population: 527612,
-            color: 'red',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 15,
-        },
-        {
-            name: 'New York',
-            population: 8538000,
-            color: 'yellow',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 15,
-        },
-        {
-            name: 'Moscow',
-            population: 11920000,
-            color: 'rgb(0, 0, 255)',
-            legendFontColor: '#7F7F7F',
-            legendFontSize: 15,
-        },
-    ];
+    const [namalayanan, setNamaLayanan] = useState([]);
+    const accessToken = useSelector((state) => state.accessToken);
+    useEffect(() => {
+        getNamaLayanan()
+    }, [])
+    const getNamaLayanan = async () => {
+        try {
+            
+            const resNamaLayanan = await axios.get(BASE_URL + '/resources/pnbp-kategori', { headers: { Authorization: accessToken } });
+            const { success, status, message, data } = resNamaLayanan;
+            setNamaLayanan(data);
+            console.log(data);
+        } catch (error) {
+            console.log(error.response);
+            alert(error.response)
+        }
+    }
 
-    return (
-        <>
-            <Container>
-                <TitleApp>Home Screen</TitleApp>
-                <PieChart
-                    data={pieData}
-                    width={350}
-                    height={200}
-                    chartConfig={chartConfig}
-                    accessor="population"
-                    backgroundColor="transparent"
-                    paddingLeft="10"
-                    absolute
-                />
-                <TextInfo>Kantor Wilayah Bangka Belitung</TextInfo>
-            </Container>
-        </>
-    );
+const [index, setIndex] = useState(0);
+
+const [routes] = useState([
+    { key: 'first', title: 'First' },
+    { key: 'second', title: 'Second' },
+]);
+
+const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+});
+
+return (
+    <>
+        <Container>
+            <StatusBar backgroundColor="#2196f3" barStyle="light-content" />
+            <TabView
+                navigationState={{ index, routes }}
+                renderScene={renderScene}
+                onIndexChange={setIndex}
+                initialLayout={initialLayout}
+            />
+        </Container>
+    </>
+);
 }
 
 const Container = styled.View`
   flex: 1;
-  padding-horizontal: 16px;
+  padding-horizontal: 0px;
 `;
 
 const TitleApp = styled.Text`
@@ -84,14 +97,3 @@ const TitleApp = styled.Text`
 const TextInfo = styled.Text`
   text-align: center;
 `;
-
-const chartConfig = {
-    backgroundGradientFrom: "#1E2923",
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: "#08130D",
-    backgroundGradientToOpacity: 0.5,
-    color: (opacity = 0) => `rgba(26, 255, 146, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
-    useShadowColorFromDataset: false // optional
-  };

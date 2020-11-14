@@ -56,7 +56,7 @@ export default function Login({ navigation }) {
       //}
     } catch (error) {
       console.log(error.response);
-      navigation.navigate('home')
+      //navigation.navigate('home')
       dispatch(setLoading(false));
       Alert.alert("","Email dan password salah")
     }
