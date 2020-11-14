@@ -328,7 +328,7 @@ export default function Administrasi() {
               item.child.map((itemChild, itemIndex) => (
                 <ChildrenContainer key={itemIndex}>
                   <ChildrenText>
-                    {itemIndex}. {itemChild.nama_layanan}
+                    {'-'} {itemChild.nama_layanan}
                   </ChildrenText>
                   <ChildenRow>
                     <ChildrenInputContainer>
