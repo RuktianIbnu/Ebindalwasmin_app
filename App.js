@@ -50,7 +50,7 @@ const Nav = () => {
     <>
       <StatusBar hidden={loading} />
       <NavigationContainer theme={MyTheme}>
-        <Stack.Navigator initialRouteName="index">
+        <Stack.Navigator >
           {accessToken === null ? (
             <Stack.Screen
               name="login"
