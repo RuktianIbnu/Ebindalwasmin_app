@@ -3,37 +3,34 @@ import styled from 'styled-components/native';
 import imageMap from '../assets/images/map.png';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
-import {useDispatch} from 'react-redux'
-import {Alert} from 'react-native'
+import {useDispatch} from 'react-redux';
+import {Alert} from 'react-native';
 import {BASE_URL} from '../helpers/global';
-import {
-  setLoading,
-  setAccessToken,
-  setUser,
-} from '../store/actionCreator';
-
+import {setLoading, setAccessToken, setUser} from '../store/actionCreator';
 
 export default function Login({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const emailRef = useRef();
   const passwordRef = useRef();
   const dispatch = useDispatch();
 
-  const getDataUser = async(id, token) => {
+  const getDataUser = async (id, token) => {
     try {
-      const resUser = await axios.get(BASE_URL+'/resources/user/'+ id, {headers : {Authorization : token}});
-      const { success, status, message, data } = resUser.data;
+      const resUser = await axios.get(BASE_URL + '/resources/user/' + id, {
+        headers: {Authorization: token},
+      });
+      const {success, status, message, data} = resUser.data;
 
-      dispatch(setUser(resUser.data));
-      Alert.alert("","berhasil get data user")
+      dispatch(setUser(data));
+      // Alert.alert('', 'berhasil get data user');
     } catch (error) {
       console.log(error.response);
       dispatch(setLoading(false));
-      alert(error.response)
+      alert(error.response);
     }
-  }
+  };
 
   const submit = async () => {
     try {
@@ -42,23 +39,23 @@ export default function Login({ navigation }) {
         email: email,
         password: password,
       };
-      const response = await axios.post(BASE_URL+'/login', body);
-      
-      const { success, status, message, data } = response.data;
-      console.log(success, status, data)
+      const response = await axios.post(BASE_URL + '/login', body);
+
+      const {success, status, message, data} = response.data;
+      console.log(success, status, data);
       //if (success === true && status === 200) {
-        //alert("berhasil get token")
-        dispatch(setAccessToken(data.token));
-        const id = data.id;
-        getDataUser(id, data.token)
-        dispatch(setLoading(false));
-        navigation.navigate('home')
+
+      //alert("berhasil get token")
+      dispatch(setAccessToken(data.token));
+      const id = data.id;
+      getDataUser(id, data.token);
+      dispatch(setLoading(false));
       //}
     } catch (error) {
       console.log(error.response);
       navigation.navigate('home')
       dispatch(setLoading(false));
-      Alert.alert("","Email dan password salah")
+      Alert.alert('', 'Email atau password salah');
     }
   };
 
@@ -68,16 +65,17 @@ export default function Login({ navigation }) {
         <TitleApp>e-Bindalwasmin</TitleApp>
         <MapImage source={imageMap} />
         <InputEmailContainer>
-          <InputEmail 
-            placeholder="Email" 
-            onChangeText = {(text)=> setEmail(text)} 
-            placeholderTextColor="#6e34a3" />
+          <InputEmail
+            placeholder="Email"
+            onChangeText={(text) => setEmail(text)}
+            placeholderTextColor="#6e34a3"
+          />
           <IconInputLeft name="account" color="#6e34a3" size={20} />
         </InputEmailContainer>
         <InputPasswordContainer>
           <InputEmail
             placeholder="Password"
-            onChangeText = {(text)=> setPassword(text)}
+            onChangeText={(text) => setPassword(text)}
             secureTextEntry={!showPassword}
             placeholderTextColor="#6e34a3"
           />
@@ -98,7 +96,7 @@ export default function Login({ navigation }) {
             />
           )}
         </InputPasswordContainer>
-        <LoginButton onPress={()=>submit()}>
+        <LoginButton onPress={() => submit()}>
           <LoginButtonText>Login</LoginButtonText>
         </LoginButton>
         <TextInfo>Kantor Wilayah Bangka Belitung</TextInfo>
@@ -166,4 +164,3 @@ const MapImage = styled.Image`
   resize-mode: contain;
   margin-top: 20px;
 `;
-
