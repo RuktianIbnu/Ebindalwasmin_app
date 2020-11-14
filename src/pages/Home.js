@@ -1,3 +1,5 @@
+
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components/native';
 import { View, Dimensions, StatusBar, Text } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
@@ -97,3 +99,14 @@ const TitleApp = styled.Text`
 const TextInfo = styled.Text`
   text-align: center;
 `;
+
+const chartConfig = {
+    backgroundGradientFrom: "#1E2923",
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: "#08130D",
+    backgroundGradientToOpacity: 0.5,
+    color: (opacity = 0) => `rgba(26, 255, 146, ${opacity})`,
+    strokeWidth: 2, // optional, default 3
+    barPercentage: 0.5,
+    useShadowColorFromDataset: false // optional
+  };
