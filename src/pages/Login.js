@@ -8,7 +8,7 @@ import {Alert} from 'react-native';
 import {BASE_URL} from '../helpers/global';
 import {setLoading, setAccessToken, setUser} from '../store/actionCreator';
 
-export default function Login() {
+export default function Login({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,6 +44,7 @@ export default function Login() {
       const {success, status, message, data} = response.data;
       console.log(success, status, data);
       //if (success === true && status === 200) {
+
       //alert("berhasil get token")
       dispatch(setAccessToken(data.token));
       const id = data.id;
@@ -52,6 +53,7 @@ export default function Login() {
       //}
     } catch (error) {
       console.log(error.response);
+      //navigation.navigate('home')
       dispatch(setLoading(false));
       Alert.alert('', 'Email atau password salah');
     }
