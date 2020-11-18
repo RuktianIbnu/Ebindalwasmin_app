@@ -179,7 +179,10 @@ export default function Report() {
           <Picker
             selectedValue={selectedLayanan}
             onValueChange={(itemValue, _) => setSelectedLayanan(itemValue)}>
-            <Picker.Item value="all" label="SEMUA JENIS LAYANAN" />
+            <Picker.Item value="0" label="SEMUA JENIS LAYANAN" />
+            <Picker.Item value="8" label="Layanan Percepatan Paspor"/>
+            <Picker.Item value="36" label="Biaya Beban Paspor Hilang"/>
+            <Picker.Item value="37" label="Biaya Beban Paspor Rusak"/>
             {layananDropdown.map((item) => (
               <Picker.Item
                 key={item.id}
