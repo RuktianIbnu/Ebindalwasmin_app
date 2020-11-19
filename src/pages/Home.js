@@ -2,174 +2,182 @@ import styled from 'styled-components/native';
 import { View, Dimensions, StatusBar, Text } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import { Provider, useSelector } from 'react-redux';
-import axios from 'axios';
+import Axios from 'axios';
 import { BASE_URL } from '../helpers/global';
 import React, { useRef, useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
-import { StackedBarChart, XAxis, YAxis, Grid } from 'react-native-svg-charts';
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
+import {
+  LineChart,
+  BarChart,
+  PieChart,
+  ProgressChart,
+  ContributionGraph,
+  StackedBarChart
+} from "react-native-chart-kit"
+import { ScrollView } from 'react-native-gesture-handler';
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 const initialLayout = { width: Dimensions.get('window').width };
 
 export default function Home({ navigation }) {
-    const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(0);
 
-    const [routes] = useState([
-        { key: 'first', title: 'Paspor' },
-        { key: 'second', title: 'Visa' },
-        { key: 'thrid', title: 'Izin Tinggal' },
-        { key: 'fourth', title: 'PNBP Lainnya' },
-    ]);
+  const [routes] = useState([
+    { key: 'first', title: 'Paspor' },
+    { key: 'second', title: 'Visa' },
+    { key: 'thrid', title: 'Izin Tinggal' },
+    { key: 'fourth', title: 'PNBP Lainnya' },
+  ]);
 
-    const renderScene = SceneMap({
-        first: FirstRoute,
-        second: SecondRoute,
-        thrid: ThridRoute,
-        fourth: FourthRoute,
-    });
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+    thrid: ThridRoute,
+    fourth: FourthRoute,
+  });
 
-    return (
-        <>
-            <Container>
-                <StatusBar backgroundColor="#2196f3" barStyle="light-content" />
-                <TabView
-                    navigationState={{ index, routes }}
-                    renderScene={renderScene}
-                    onIndexChange={setIndex}
-                    initialLayout={initialLayout}
-                />
-            </Container>
-        </>
-    );
+  return (
+    <>
+      <Container>
+        <StatusBar backgroundColor="#2196f3" barStyle="light-content" />
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={initialLayout}
+        />
+      </Container>
+    </>
+  );
 }
 
 const FirstRoute = () => {
-    const accessToken = useSelector((state) => state.accessToken);
-    const [dataPerwilayah, setDataPerwilayah] = useState([]);
-    const datwilArr = [];
+  const accessToken = useSelector((state) => state.accessToken);
+  const [dataPnbpPaspor, setDataPnbpPaspor] = useState([]);
 
-    useEffect(() => {
-        getdataPerwilayah()
-    }, [])
+  useEffect(() => {
+    getdataPnbpPaspor()
+  }, [])
 
-    const getdataPerwilayah = async () => {
-        try {
-            const response = await axios.get(BASE_URL + '/resources/paspor-pivot-perwilayah', { headers: { Authorization: accessToken } });
-            const { status, data } = response.data;
-            if (status === 200) {
-                const datwil = data.data;
-                //console.log(datwil);
-                for (const iterator of datwil) {
-                    datwilArr.push(iterator);
+  const getdataPnbpPaspor = async () => {
+    try {
+      const body = {
+        id_layanan: 1,
+        id_kantor: 0,
+      };
+
+      const headers = {
+        Authorization: null,
+      };
+
+      const response = await Axios.post(`${BASE_URL}/resources/get-pnbp/`, body, {
+        headers,
+      });
+
+      const { status, data } = response;
+      console.log(status)
+      if (status === 200) {
+        setDataPnbpPaspor(data.data);
+      }
+      else {
+        //Alert.alert(error);
+      }
+    } catch (error) {
+      //console.log(error.response);
+      //Alert.alert(error)
+    }
+  };
+
+  return (
+    <>
+      <Container>
+        <Text>Paspor</Text>
+        {dataPnbpPaspor.length > 0 && (
+          <Scroltable horizontal>
+            <LineChart
+              onDataPointClick={({ value, getColor }) =>
+                showMessage({
+                  message: `${value}`,
+                  description: "You selected this value",
+                  backgroundColor: getColor(0.9)
+                })
+              }
+              data={{
+                labels: dataPnbpPaspor.map((v) => v.periode),
+                datasets: [
+                  {
+                    data: dataPnbpPaspor.map((v) => parseInt(v.total))
+                  }
+                ]
+              }}
+              width={Dimensions.get("window").width} // from react-native
+              height={300}
+              yAxisInterval={1} // optional, defaults to 1
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 0, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 30,
+                  paddingLeft: 50
+                },
+                propsForDots: {
+                  r: "6",
+                  strokeWidth: 4,
+                  stroke: "#ffa726"
                 }
-                setDataPerwilayah(data.data);
-                //console.log(datwilArr);
-            }
-        } catch (error) {
-            //console.log(error.response);
-            Alert.alert(error)
-        }
-    };
-
-    const data = [
-        {
-            month: new Date(2015, 0, 1),
-            apples: 3840,
-            bananas: 1920,
-            cherries: 960,
-            dates: 400,
-            oranges: 400,
-        },
-        {
-            month: new Date(2015, 1, 1),
-            apples: 1600,
-            bananas: 1440,
-            cherries: 960,
-            dates: 400,
-        },
-        {
-            month: new Date(2015, 2, 1),
-            apples: 640,
-            bananas: 960,
-            cherries: 3640,
-            dates: 400,
-        },
-        {
-            month: new Date(2015, 3, 1),
-            apples: 3320,
-            bananas: 480,
-            cherries: 640,
-            dates: 400,
-        },
-    ];
-
-    const colors = ['#7b4173', '#a55194', '#ce6dbd', '#de9ed6'];
-    const keys = ['apples', 'bananas', 'cherries', 'dates'];
-
-    return (
-        <>
-            <Container>
-                <Text>Paspor</Text>
-                {/* <YAxis
-                    data={data.apples}
-                    contentInset={contentInset}
-                    svg={{
-                        fill: 'grey',
-                        fontSize: 10,
-                    }}
-                    numberOfTicks={10}
-                    formatLabel={(value) => `${value}ºC`}
-                /> */}
-                <StackedBarChart
-                    style={{ height: 200 }}
-                    keys={keys}
-                    colors={colors}
-                    data={data}
-                    showGrid={false}
-                    contentInset={{ top: 30, bottom: 30 }}
-                />
-                <XAxis
-                    style={{ marginHorizontal: 0 }}
-                    data={data}
-                    formatLabel={(value, index) => index}
-                    contentInset={{ left: 10, right: 10 }}
-                    svg={{ fontSize: 10, fill: 'black' }}
-                />
-            </Container>
-        </>
-    );
+              }}
+              bezier
+              style={{
+                marginVertical: 8,
+                borderRadius: 10
+              }}
+            />
+          </Scroltable>
+        )}
+      </Container>
+    </>
+  );
 };
 
 const SecondRoute = () => {
-    return (
-        <>
-            <Container>
-                <Text>Visa</Text>
-            </Container>
-        </>
-    );
+  return (
+    <>
+      <Container>
+        <Text>Visa</Text>
+      </Container>
+    </>
+  );
 };
 
 const ThridRoute = () => {
-    return (
-        <>
-            <Container>
-                <Text>Izin Tinggal</Text>
-            </Container>
-        </>
-    );
+  return (
+    <>
+      <Container>
+        <Text>Izin Tinggal</Text>
+      </Container>
+    </>
+  );
 };
 
 const FourthRoute = () => {
-    return (
-        <>
-            <Container>
-                <Text>PNBP Lainnya</Text>
-            </Container>
-        </>
-    );
+  return (
+    <>
+      <Container>
+        <Text>PNBP Lainnya</Text>
+      </Container>
+    </>
+  );
 };
+
+const Scroltable = styled.ScrollView`
+  flex: 1;
+`;
 
 const screenWidth = styled.View`
   width: 100%;
@@ -261,7 +269,7 @@ const DateInput = styled.TextInput`
 //   font-weight: bold;
 //   margin-bottom: 8px;
 // `;
-const Container = styled.ScrollView`
+const Container = styled.View`
   flex: 1;
   margin-bottom: 16px;
 `;
