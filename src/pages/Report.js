@@ -10,6 +10,7 @@ import { Alert } from 'react-native';
 import { setLoading } from '../store/actionCreator';
 import CheckBox from '@react-native-community/checkbox';
 import { DataTable } from 'react-native-paper';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default function Report() {
@@ -102,15 +103,21 @@ export default function Report() {
       };
 
       setDataTable([])
-
+      console.log(body)
       dispatch(setLoading(true));
-      const response = await Axios.post(`${BASE_URL}/resources/filter-monthyear/`, body);
+      const response = await Axios.post(`${BASE_URL}/resources/filter-monthyear/`, body, {
+        headers,
+      });
 
       const { status, data } = response;
-      console.log(body)
+
       if (status === 200) {
         setDataTable(data.data);
         dispatch(setLoading(false));
+        
+        if (data.data == '') {
+          Alert.alert("Data Tidak Ditemukan")
+        }
       }
       else {
         Alert.alert(error);
@@ -184,10 +191,10 @@ export default function Report() {
           <Picker
             selectedValue={selectedLayanan}
             onValueChange={(itemValue, _) => setSelectedLayanan(itemValue)}>
-            <Picker.Item value="0" label="SEMUA JENIS LAYANAN" />
-            <Picker.Item value="8" label="Layanan Percepatan Paspor" />
-            <Picker.Item value="36" label="Biaya Beban Paspor Hilang" />
-            <Picker.Item value="37" label="Biaya Beban Paspor Rusak" />
+            <Picker.Item value={0} label="SEMUA JENIS LAYANAN" />
+            <Picker.Item value={8} label="Layanan Percepatan Paspor" />
+            <Picker.Item value={36} label="Biaya Beban Paspor Hilang" />
+            <Picker.Item value={37} label="Biaya Beban Paspor Rusak" />
             {layananDropdown.map((item) => (
               <Picker.Item
                 key={item.id}
@@ -202,7 +209,7 @@ export default function Report() {
           <Picker
             selectedValue={selectedSatker}
             onValueChange={(itemValue, _) => setSelectedSatker(itemValue)}>
-            <Picker.Item value="0" label="SEMUA SATUAN KERJA" />
+            <Picker.Item value={0} label="SEMUA SATUAN KERJA" />
             {satkerDropdown.map((item, index) => (
               <Picker.Item
                 key={index}
@@ -217,6 +224,7 @@ export default function Report() {
             <ButtonLabel>Cari</ButtonLabel>
           </ButtonNext>
         </BottonContainer>
+        
         {dataTable.length > 0 ? (
           <DataTable style={{ marginTop: 10, flex: 1 }}>
             {toggleCheckBox ? (
@@ -234,6 +242,7 @@ export default function Report() {
                 </DataTable.Header>
               )}
             {toggleCheckBox ? (
+              <ScrollView>
               <>
                 {dataTable.map((item, index) => (
                   <DataTable.Row key={index}>
@@ -243,7 +252,9 @@ export default function Report() {
                   </DataTable.Row>
                 ))}
               </>
+              </ScrollView>
             ) : (
+              <ScrollView>
                 <>
                   {dataTable.map((item, index) => (
                     <DataTable.Row key={index}>
@@ -256,6 +267,7 @@ export default function Report() {
                     </DataTable.Row>
                   ))}
                 </>
+                </ScrollView>
               )}
           </DataTable>
         ) : (
@@ -276,29 +288,6 @@ export default function Report() {
               )}
           </DataTable>
           )}
-
-        {/* <DataTable.Pagination
-          page={1}
-          numberOfPages={3}
-          onPageChange={page => {
-            console.log(page);
-          }}
-          label="oke muncul"
-        /> */}
-        {/* <Table>
-          <TableHeaderContainer>
-            <TableHeader>No</TableHeader>
-            <TableHeader>Tanggal</TableHeader>
-            <TableHeader>Jenis PNBP</TableHeader>
-            <TableHeader>Total</TableHeader>
-          </TableHeaderContainer>
-          <TableCellContainer>
-            <TableCell>1</TableCell>
-            <TableCell>2020-08-07</TableCell>
-            <TableCell>Perpanjangan Izin Kunjungan Masa Berlaku 60 hari</TableCell>
-            <TableCell>0</TableCell>
-          </TableCellContainer>
-        </Table> */}
       </Container>
     </>
   );
@@ -406,7 +395,7 @@ const Text = styled.Text`
   font-weight: bold;
   margin-bottom: 8px;
 `;
-const Container = styled.ScrollView`
+const Container = styled.View`
   flex: 1;
   padding-horizontal: 16px;
   padding-vertical: 16px;

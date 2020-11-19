@@ -14,8 +14,10 @@ export default function Administrasi() {
   const [kategori, setKategori] = useState([]);
   const [kategoriChild, setKategoriChild] = useState([]);
   const [kategoriDropdown, setKategoriDropdown] = useState([]);
+  const [satkerDropdown, setSatkerDropdown] = useState([]);
   const [selectedKategori, setSelectedKategori] = useState('');
   const [selectedTanggal, setSelectedTanggal] = useState(new Date(Date.now()));
+  const [selectedSatker, setSelectedSatker] = useState('');
   const accessToken = useSelector((state) => state.accessToken);
   const dispatch = useDispatch();
   const state = {
@@ -24,7 +26,35 @@ export default function Administrasi() {
 
   useEffect(() => {
     GetKategoriPNBP();
+    GetSatker();
   }, []);
+
+  const GetSatker = async () => {
+    try {
+      const headers = {
+        Authorization: accessToken,
+      };
+      dispatch(setLoading(true));
+      const response = await Axios.get(`${BASE_URL}/resources/satker`, {
+        headers,
+      });
+      dispatch(setLoading(false));
+      const { data, status } = response;
+      if (status === 200) {
+        const satker = data.data;
+        const satkerArr = [];
+        //console.log(satker);
+        for (const iterator of satker) {
+          satkerArr.push(iterator);
+        }
+        setSatkerDropdown(satkerArr);
+        setSatker(data.data);
+      }
+    } catch (error) {
+      //console.log(error);
+      dispatch(setLoading(false));
+    }
+  };
 
   const GetKategoriPNBP = async () => {
     try {
@@ -56,20 +86,25 @@ export default function Administrasi() {
   const GetKategoriDataByTanggal = async () => {
     // console.log(selectedKategori, selectedTanggal);
     try {
-      if (selectedKategori === '') {
-        Alert.alert(null, 'Pilih Kategori terlebih dahulu');
+      if (selectedKategori === '' || selectedSatker ==='') {
+        Alert.alert(null, 'Pilih Kategori dan Satuan kerja terlebih dahulu');
       } else {
         //console.log('SELECTED KATEGORI', selectedKategori);
         dispatch(setLoading(true));
         const headers = {
           Authorization: accessToken,
         };
-        const tanggal = moment(selectedTanggal).format('YYYY-MM-DD');
+
+        const body = {
+          id_satker: selectedSatker,
+          tanggal: moment(selectedTanggal).format('YYYY-MM-DD'),
+        };
+
         setKategoriChild([])
         switch (selectedKategori) {
           case 'DOKUMEN PERJALANAN REPUBLIK INDONESIA':
-            const responsePaspor = await Axios.get(
-              `${BASE_URL}/resources/paspor-by/${tanggal}`,
+            const responsePaspor = await Axios.post(
+              `${BASE_URL}/resources/paspor-by/`, body,
               {headers},
             );
             // const {status, data} = responsePaspor;
@@ -106,8 +141,8 @@ export default function Administrasi() {
 
           case 'IZIN KEIMIGRASIAN':
             //console.log(tanggal);
-            const responseIntal = await Axios.get(
-              `${BASE_URL}/resources/intal-by/${tanggal}`,
+            const responseIntal = await Axios.post(
+              `${BASE_URL}/resources/intal-by/`, body,
               {headers},
             );
             // const {status, data} = responseIntal;
@@ -160,8 +195,8 @@ export default function Administrasi() {
             break;
 
           case 'VISA':
-            const responseVisa = await Axios.get(
-              `${BASE_URL}/resources/visa-by/${tanggal}`,
+            const responseVisa = await Axios.post(
+              `${BASE_URL}/resources/visa-by/`, body,
               {headers},
             );
             // const {status, data} = responseVisa;
@@ -213,8 +248,8 @@ export default function Administrasi() {
             break;
 
           case 'PNBP KEIMIGRASIAN LAINNYA':
-            const responsePNBP = await Axios.get(
-              `${BASE_URL}/resources/pnbp-by/${tanggal}`,
+            const responsePNBP = await Axios.post(
+              `${BASE_URL}/resources/pnbp-by/`, body,
               {headers},
             );
             if (responsePNBP.status === 200) {
@@ -274,6 +309,21 @@ export default function Administrasi() {
   return (
     <>
       <Container>
+      <Text>Pilih Satuan Kerja</Text>
+        <PickerContainer>
+          <Picker
+            selectedValue={selectedSatker}
+            onValueChange={(itemValue, _) => setSelectedSatker(itemValue)}>
+            <Picker.Item value="" label="Pilih Satuan Kerja" />
+            {satkerDropdown.map((item, index) => (
+              <Picker.Item
+                key={index}
+                label={item.nama_kantor}
+                value={item.id_kantor}
+              />
+            ))}
+          </Picker>
+        </PickerContainer>
         <Text>Pilih Kategori</Text>
         <PickerContainer>
           <Picker
