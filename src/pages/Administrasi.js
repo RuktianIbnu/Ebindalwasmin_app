@@ -384,6 +384,7 @@ export default function Administrasi() {
                     <ChildrenInputContainer>
                       <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
                       <ChildrenInput
+                      editable={false}
                         onChangeText={(text) => {
                           let parent = [...item.child];
                           parent[itemIndex] = {
@@ -416,6 +417,7 @@ export default function Administrasi() {
                     <ChildrenInputContainer>
                       <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
                       <ChildrenInput
+                      editable={false}
                         onChangeText={(text) => {
                           let parent = [...item.child];
                           parent[itemIndex] = {
@@ -460,6 +462,7 @@ export default function Administrasi() {
                 <ChildrenInputContainer>
                   <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
                   <ChildrenInput
+                  editable={false}
                     onChangeText={(text) => {
                       let newArr = [...kategoriChild];
 
@@ -489,6 +492,7 @@ export default function Administrasi() {
                 <ChildrenInputContainer>
                   <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
                   <ChildrenInput
+                  editable={false}
                     onChangeText={(text) => {
                       let newArr = [...kategoriChild];
                       newArr[index] = {
