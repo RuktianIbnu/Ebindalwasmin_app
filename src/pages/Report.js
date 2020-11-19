@@ -87,35 +87,37 @@ export default function Report() {
     }
   };
 
-  const body = {
-    cekbox: toggleCheckBox,
-    id_jenis: selectedLayanan,
-    id_satker: selectedSatker,
-    tanggal_awal: selectedTanggalAwal,
-    tanggal_akhir: selectedTanggalAkhir,
-  };
-
-  const headers = {
-    Authorization: accessToken,
-  };
-
   const GetFilter = async () => {
     try {
-      const response = await Axios.get(`${BASE_URL}/resources/pnbp-kategori`, {
-        headers,
-        body,
-      });
+      const body = {
+        cekbox: toggleCheckBox,
+        id_jenis: selectedLayanan,
+        id_satker: selectedSatker,
+        tanggal_akhir: moment(selectedTanggalAkhir).format('YYYY-MM-DD'),
+        tanggal_awal: moment(selectedTanggalAwal).format('YYYY-MM-DD'),
+      };
+
+      const headers = {
+        Authorization: null,
+      };
+
+      setDataTable([])
+
+      dispatch(setLoading(true));
+      const response = await Axios.post(`${BASE_URL}/resources/filter-monthyear/`, body);
 
       const { status, data } = response;
+      console.log(body)
       if (status === 200) {
         setDataTable(data.data);
+        dispatch(setLoading(false));
       }
       else {
         console.log("data kosong")
       }
     }
     catch (errr) {
-
+      console.log(errr)
     }
   }
 
@@ -170,7 +172,10 @@ export default function Report() {
           <CheckBox
             disabled={false}
             value={toggleCheckBox}
-            onValueChange={(newValue) => setToggleCheckBox(newValue)}
+            onValueChange={(newValue) => {
+              setDataTable([])
+              setToggleCheckBox(newValue)
+            }}
           />
           <Text style={{ marginTop: 5 }}>Perbulan Pertahun</Text>
         </Row>
@@ -180,9 +185,9 @@ export default function Report() {
             selectedValue={selectedLayanan}
             onValueChange={(itemValue, _) => setSelectedLayanan(itemValue)}>
             <Picker.Item value="0" label="SEMUA JENIS LAYANAN" />
-            <Picker.Item value="8" label="Layanan Percepatan Paspor"/>
-            <Picker.Item value="36" label="Biaya Beban Paspor Hilang"/>
-            <Picker.Item value="37" label="Biaya Beban Paspor Rusak"/>
+            <Picker.Item value="8" label="Layanan Percepatan Paspor" />
+            <Picker.Item value="36" label="Biaya Beban Paspor Hilang" />
+            <Picker.Item value="37" label="Biaya Beban Paspor Rusak" />
             {layananDropdown.map((item) => (
               <Picker.Item
                 key={item.id}
@@ -197,7 +202,7 @@ export default function Report() {
           <Picker
             selectedValue={selectedSatker}
             onValueChange={(itemValue, _) => setSelectedSatker(itemValue)}>
-            <Picker.Item value="all" label="SEMUA SATUAN KERJA" />
+            <Picker.Item value="0" label="SEMUA SATUAN KERJA" />
             {satkerDropdown.map((item, index) => (
               <Picker.Item
                 key={index}
@@ -212,37 +217,108 @@ export default function Report() {
             <ButtonLabel>Cari</ButtonLabel>
           </ButtonNext>
         </BottonContainer>
-        <DataTable style={{marginTop:10}}>
-          <DataTable.Header>
-            <DataTable.Title>Dessert</DataTable.Title>
-            <DataTable.Title numeric>Calories</DataTable.Title>
-            <DataTable.Title numeric>Fat</DataTable.Title>
-          </DataTable.Header>
+        {dataTable.length > 0 ? (
+          <DataTable style={{ marginTop: 10, flex: 1 }}>
+            {toggleCheckBox ? (
+              <DataTable.Header>
+                <DataTable.Title style={{ maxWidth: 40 }}>No</DataTable.Title>
+                <DataTable.Title>Periode</DataTable.Title>
+                <DataTable.Title>Total</DataTable.Title>
+              </DataTable.Header>
+            ) : (
+                <DataTable.Header>
+                  <DataTable.Title style={{ maxWidth: 40 }}>No</DataTable.Title>
+                  <DataTable.Title>Tanggal</DataTable.Title>
+                  <DataTable.Title>Jenis PNBP</DataTable.Title>
+                  <DataTable.Title numeric>Totral</DataTable.Title>
+                </DataTable.Header>
+              )}
+            {toggleCheckBox ? (
+              <>
+                {dataTable.map((item, index) => (
+                  <DataTable.Row key={index}>
+                    <DataTable.Cell style={{ maxWidth: 40 }}>{index + 1}</DataTable.Cell>
+                    <DataTable.Cell>{item.periode}</DataTable.Cell>
+                    <DataTable.Cell>{item.total}</DataTable.Cell>
+                  </DataTable.Row>
+                ))}
+              </>
+            ) : (
+                <>
+                  {dataTable.map((item, index) => (
+                    <DataTable.Row key={index}>
+                      <DataTable.Cell style={{ maxWidth: 40 }}>{index + 1}</DataTable.Cell>
+                      <DataTable.Cell>{moment(item.tanggal).format("YYYY-MM-DD")}</DataTable.Cell>
+                      <Scroltable horizontal>
+                        <DataTable.Cell style={{ flex: 3 }}>{item.jenis_pnbp}</DataTable.Cell>
+                      </Scroltable>
+                      <DataTable.Cell numeric>{item.total}</DataTable.Cell>
+                    </DataTable.Row>
+                  ))}
+                </>
+              )}
+          </DataTable>
+        ) : (
+          <DataTable style={{ marginTop: 10, flex: 1 }}>
+            {toggleCheckBox ? (
+              <DataTable.Header>
+                <DataTable.Title style={{ maxWidth: 40 }}>No</DataTable.Title>
+                <DataTable.Title>Periode</DataTable.Title>
+                <DataTable.Title>Total</DataTable.Title>
+              </DataTable.Header>
+            ) : (
+                <DataTable.Header>
+                  <DataTable.Title style={{ maxWidth: 40 }}>No</DataTable.Title>
+                  <DataTable.Title>Tanggal</DataTable.Title>
+                  <DataTable.Title>Jenis PNBP</DataTable.Title>
+                  <DataTable.Title numeric>Totral</DataTable.Title>
+                </DataTable.Header>
+              )}
+          </DataTable>
+          )}
 
-          <DataTable.Row>
-            <DataTable.Cell>Frozen yogurt</DataTable.Cell>
-            <DataTable.Cell numeric>159</DataTable.Cell>
-            <DataTable.Cell numeric>6.0</DataTable.Cell>
-          </DataTable.Row>
-
-          <DataTable.Row>
-            <DataTable.Cell>Ice cream sandwich</DataTable.Cell>
-            <DataTable.Cell numeric>237</DataTable.Cell>
-            <DataTable.Cell numeric>8.0</DataTable.Cell>
-          </DataTable.Row>
-        </DataTable>
-        <DataTable.Pagination
+        {/* <DataTable.Pagination
           page={1}
           numberOfPages={3}
           onPageChange={page => {
             console.log(page);
           }}
           label="oke muncul"
-        />
-    </Container>
+        /> */}
+        {/* <Table>
+          <TableHeaderContainer>
+            <TableHeader>No</TableHeader>
+            <TableHeader>Tanggal</TableHeader>
+            <TableHeader>Jenis PNBP</TableHeader>
+            <TableHeader>Total</TableHeader>
+          </TableHeaderContainer>
+          <TableCellContainer>
+            <TableCell>1</TableCell>
+            <TableCell>2020-08-07</TableCell>
+            <TableCell>Perpanjangan Izin Kunjungan Masa Berlaku 60 hari</TableCell>
+            <TableCell>0</TableCell>
+          </TableCellContainer>
+        </Table> */}
+      </Container>
     </>
   );
 }
+const TableCell = styled.Text``
+const TableCellContainer = styled.View`
+flex-direction: row;
+justify-content: space-around;
+`
+const TableHeader = styled.Text``
+const TableHeaderContainer = styled.View`
+flex-direction: row;
+justify-content: space-around;
+`
+const Table = styled.View`
+margin-top:20px;
+`
+const Scroltable = styled.ScrollView`
+  flex: 1;
+`;
 
 const ChildrenInputContainer = styled.View`
   width: 30%;
