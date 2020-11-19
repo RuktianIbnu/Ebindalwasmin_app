@@ -145,7 +145,7 @@ const InputEmail = styled.TextInput`
   padding-vertical: 15px;
   color: #6e34a3;
 `;
-const Container = styled.View`
+const Container = styled.ScrollView`
   flex: 1;
   padding-horizontal: 16px;
 `;

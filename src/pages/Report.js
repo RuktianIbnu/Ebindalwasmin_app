@@ -113,7 +113,7 @@ export default function Report() {
         dispatch(setLoading(false));
       }
       else {
-        console.log("data kosong")
+        Alert.alert(error);
       }
     }
     catch (errr) {
@@ -239,7 +239,7 @@ export default function Report() {
                   <DataTable.Row key={index}>
                     <DataTable.Cell style={{ maxWidth: 40 }}>{index + 1}</DataTable.Cell>
                     <DataTable.Cell>{item.periode}</DataTable.Cell>
-                    <DataTable.Cell>{item.total}</DataTable.Cell>
+                    <DataTable.Cell>{'Rp '+item.total}</DataTable.Cell>
                   </DataTable.Row>
                 ))}
               </>
@@ -252,7 +252,7 @@ export default function Report() {
                       <Scroltable horizontal>
                         <DataTable.Cell style={{ flex: 3 }}>{item.jenis_pnbp}</DataTable.Cell>
                       </Scroltable>
-                      <DataTable.Cell numeric>{item.total}</DataTable.Cell>
+                      <DataTable.Cell numeric>{'RP '+item.total}</DataTable.Cell>
                     </DataTable.Row>
                   ))}
                 </>
@@ -271,7 +271,7 @@ export default function Report() {
                   <DataTable.Title style={{ maxWidth: 40 }}>No</DataTable.Title>
                   <DataTable.Title>Tanggal</DataTable.Title>
                   <DataTable.Title>Jenis PNBP</DataTable.Title>
-                  <DataTable.Title numeric>Totral</DataTable.Title>
+                  <DataTable.Title numeric>Total</DataTable.Title>
                 </DataTable.Header>
               )}
           </DataTable>
