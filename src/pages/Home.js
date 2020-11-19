@@ -8,6 +8,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { StackedBarChart, XAxis, YAxis, Grid } from 'react-native-svg-charts';
+import {Alert} from 'react-native';
 
 const initialLayout = { width: Dimensions.get('window').width };
 
@@ -67,7 +68,7 @@ const FirstRoute = () => {
             }
         } catch (error) {
             //console.log(error.response);
-            alert(error.response)
+            Alert.alert(error)
         }
     };
 
