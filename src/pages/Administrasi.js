@@ -152,7 +152,7 @@ export default function Administrasi() {
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'IZIN KEIMIGRASIAN') {
                   for (const kategoriItemChild of kategoriItem.child) {
-                    console.log(kategoriItem.child);
+                    //console.log(kategoriItem.child);
                     if (kategoriItemChild.child.length !== 0) {
                       for (const item of kategoriItemChild.child) {
                         if (dataByTanggal.length !== 0) {

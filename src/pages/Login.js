@@ -26,9 +26,9 @@ export default function Login({ navigation }) {
       dispatch(setUser(data));
       // Alert.alert('', 'berhasil get data user');
     } catch (error) {
-      console.log(error.response);
+      //console.log(error.response);
       dispatch(setLoading(false));
-      alert(error.response);
+      Alert.alert(error);
     }
   };
 
@@ -42,7 +42,7 @@ export default function Login({ navigation }) {
       const response = await axios.post(BASE_URL + '/login', body);
 
       const {success, status, message, data} = response.data;
-      console.log(success, status, data);
+      //console.log(success, status, data);
       //if (success === true && status === 200) {
 
       //alert("berhasil get token")
@@ -52,7 +52,7 @@ export default function Login({ navigation }) {
       dispatch(setLoading(false));
       //}
     } catch (error) {
-      console.log(error.response);
+      //console.log(error.response);
       //navigation.navigate('home')
       dispatch(setLoading(false));
       Alert.alert('', 'Email atau password salah');

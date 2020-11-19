@@ -103,7 +103,7 @@ export default function Report() {
       };
 
       setDataTable([])
-      console.log(body)
+      //console.log(body)
       dispatch(setLoading(true));
       const response = await Axios.post(`${BASE_URL}/resources/filter-monthyear/`, body, {
         headers,
@@ -124,7 +124,7 @@ export default function Report() {
       }
     }
     catch (errr) {
-      console.log(errr)
+      Alert.alert(errr)
     }
   }
 

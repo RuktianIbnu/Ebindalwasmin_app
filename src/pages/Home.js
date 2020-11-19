@@ -63,7 +63,7 @@ const FirstRoute = () => {
                     datwilArr.push(iterator);
                 }
                 setDataPerwilayah(data.data);
-                console.log(datwilArr);
+                //console.log(datwilArr);
             }
         } catch (error) {
             //console.log(error.response);
