@@ -455,7 +455,7 @@ export default function Administrasi() {
                       <ChildrenInputLabel>Total</ChildrenInputLabel>
                       <ChildrenInput
                         editable={false}
-                        value={numberWithCommas(itemChild.total)}
+                        value={'Rp '+numberWithCommas(itemChild.total)}
                       />
                     </ChildrenInputContainer>
                   </ChildenRow>
