@@ -128,6 +128,10 @@ export default function Report() {
     }
   }
 
+  const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
   return (
     <>
       <Container>
@@ -248,7 +252,7 @@ export default function Report() {
                   <DataTable.Row key={index}>
                     <DataTable.Cell style={{ maxWidth: 40 }}>{index + 1}</DataTable.Cell>
                     <DataTable.Cell>{item.periode}</DataTable.Cell>
-                    <DataTable.Cell>{'Rp '+item.total}</DataTable.Cell>
+                    <DataTable.Cell>{'Rp '+ numberWithCommas(item.total)}</DataTable.Cell>
                   </DataTable.Row>
                 ))}
               </>
@@ -263,7 +267,7 @@ export default function Report() {
                       <Scroltable horizontal>
                         <DataTable.Cell style={{ flex: 3 }}>{item.jenis_pnbp}</DataTable.Cell>
                       </Scroltable>
-                      <DataTable.Cell numeric>{'RP '+item.total}</DataTable.Cell>
+                      <DataTable.Cell numeric>{'RP '+ numberWithCommas(item.total)}</DataTable.Cell>
                     </DataTable.Row>
                   ))}
                 </>

@@ -306,6 +306,10 @@ export default function Administrasi() {
     }
   };
 
+  const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
   return (
     <>
       <Container>
@@ -451,7 +455,7 @@ export default function Administrasi() {
                       <ChildrenInputLabel>Total</ChildrenInputLabel>
                       <ChildrenInput
                         editable={false}
-                        value={itemChild.total.toString()}
+                        value={numberWithCommas(itemChild.total)}
                       />
                     </ChildrenInputContainer>
                   </ChildenRow>
@@ -522,7 +526,7 @@ export default function Administrasi() {
                   <ChildrenInputLabel>Total</ChildrenInputLabel>
                   <ChildrenInput
                     editable={false}
-                    value={item.total.toString()}
+                    value={numberWithCommas(item.total)}
                   />
                 </ChildrenInputContainer>
               </ChildenRow>

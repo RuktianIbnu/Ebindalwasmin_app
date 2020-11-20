@@ -1,13 +1,13 @@
 import styled from 'styled-components/native';
-import {View, Dimensions, StatusBar, Text, ToastAndroid} from 'react-native';
-import {TabView, SceneMap} from 'react-native-tab-view';
-import {Provider, useSelector, useDispatch} from 'react-redux';
+import { View, Dimensions, StatusBar, Text, ToastAndroid } from 'react-native';
+import { TabView, SceneMap } from 'react-native-tab-view';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import Axios from 'axios';
-import {BASE_URL} from '../helpers/global';
-import React, {useRef, useState, useEffect} from 'react';
+import { BASE_URL } from '../helpers/global';
+import React, { useRef, useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {Picker} from '@react-native-picker/picker';
-import {Alert} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { Alert } from 'react-native';
 import {
   LineChart,
   BarChart,
@@ -16,34 +16,37 @@ import {
   ContributionGraph,
   StackedBarChart,
 } from 'react-native-chart-kit';
-import {ScrollView} from 'react-native-gesture-handler';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
-import {setLoading, setToast} from '../store/actionCreator';
+import { ScrollView } from 'react-native-gesture-handler';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
+import { setLoading, setToast } from '../store/actionCreator';
 
-const initialLayout = {width: Dimensions.get('window').width};
+const initialLayout = { width: Dimensions.get('window').width };
 
-export default function Home({navigation}) {
+export default function Home({ navigation }) {
   const [index, setIndex] = useState(0);
 
   const [routes] = useState([
-    {key: 'first', title: 'Paspor'},
-    {key: 'second', title: 'Visa'},
-    {key: 'thrid', title: 'Izin Tinggal'},
-    {key: 'fourth', title: 'PNBP Lainnya'},
+    // { key: 'all', title: 'Seluruh PNBP' },
+    { key: 'first', title: 'Paspor' },
+    // { key: 'second', title: 'Visa' },
+    { key: 'thrid', title: 'Izin Tinggal' },
+    { key: 'fourth', title: 'PNBP Lainnya' },
   ]);
 
   const renderScene = SceneMap({
+    // all: AllRoute,
     first: FirstRoute,
-    second: SecondRoute,
+    // second: SecondRoute,
     thrid: ThridRoute,
     fourth: FourthRoute,
   });
 
   return (
     <>
-      <StatusBar backgroundColor="#2196f3" barStyle="light-content" />
+      <StatusBar backgroundColor="#4361ee" barStyle="light-content"/>
       <TabView
-        navigationState={{index, routes}}
+        labelStyle={{fontSize:1}}
+        navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={initialLayout}
@@ -51,6 +54,16 @@ export default function Home({navigation}) {
       <FlashMessage position="bottom" />
     </>
   );
+}
+
+const AllRoute = () => {
+  return (
+    <>
+      <Container>
+        <Text>PNBP Paspor</Text>
+      </Container>
+    </>
+  )
 }
 
 const FirstRoute = () => {
@@ -95,7 +108,7 @@ const FirstRoute = () => {
         headers,
       });
 
-      const {data, status} = response;
+      const { data, status } = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -105,7 +118,7 @@ const FirstRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getdataPnbpPaspor = async () => {
@@ -119,6 +132,7 @@ const FirstRoute = () => {
         Authorization: null,
       };
 
+      dispatch(setLoading(true));
       const response = await Axios.post(
         `${BASE_URL}/resources/get-pnbp/`,
         body,
@@ -127,13 +141,14 @@ const FirstRoute = () => {
         },
       );
 
-      const {status, data} = response;
+      const { status, data } = response;
       if (status === 200) {
         setDataPnbpPaspor(data.data);
+        dispatch(setLoading(false));
       } else {
-        //        dispatch(setLoading(false));
+        dispatch(setLoading(false));
       }
-    } catch (error) {}
+    } catch (error) { dispatch(setLoading(false));}
   };
 
   const getPemohonPaspor = async () => {
@@ -142,6 +157,7 @@ const FirstRoute = () => {
         Authorization: null,
       };
 
+      dispatch(setLoading(true));
       const response = await Axios.get(
         `${BASE_URL}/resources/paspor-byKelaminPer10hari/${selectedSatker}`,
         {
@@ -149,14 +165,16 @@ const FirstRoute = () => {
         },
       );
 
-      const {status, data} = response;
+      const { status, data } = response;
       if (status === 200) {
         setPemohonPaspor(data.data);
+        dispatch(setLoading(false));
       } else {
-        // dispatch(setLoading(false));
+        dispatch(setLoading(false));
       }
     } catch (error) {
       console.warn(error);
+      dispatch(setLoading(false));
     }
   };
 
@@ -201,10 +219,9 @@ const FirstRoute = () => {
             xLabelsOffset={8}
             horizontalLabelRotation={-10}
             verticalLabelRotation={-10}
-            onDataPointClick={({value, index}) => {
-              const message = `${
-                dataPnbpPaspor[index].periode
-              } - ${numberWithCommas(value)}`;
+            onDataPointClick={({ value, index }) => {
+              const message = `${dataPnbpPaspor[index].periode
+                } - ${numberWithCommas(value)}`;
               console.log(message);
               dispatch(
                 setToast({
@@ -299,6 +316,7 @@ const ThridRoute = () => {
         Authorization: null,
       };
 
+      dispatch(setLoading(true));
       const response = await Axios.get(
         `${BASE_URL}/resources/intal-byKelaminPer10hari/${selectedSatker}`,
         {
@@ -306,14 +324,16 @@ const ThridRoute = () => {
         },
       );
 
-      const {status, data} = response;
+      const { status, data } = response;
       if (status === 200) {
         setPemohonIntal(data.data);
+        dispatch(setLoading(false));
       } else {
-        // dispatch(setLoading(false));
+        dispatch(setLoading(false));
       }
     } catch (error) {
       console.warn(error);
+      dispatch(setLoading(true));
     }
   };
 
@@ -344,7 +364,7 @@ const ThridRoute = () => {
         headers,
       });
 
-      const {data, status} = response;
+      const { data, status } = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -354,7 +374,7 @@ const ThridRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getdataPnbpIntal = async () => {
@@ -368,6 +388,7 @@ const ThridRoute = () => {
         Authorization: null,
       };
 
+      dispatch(setLoading(true));
       const response = await Axios.post(
         `${BASE_URL}/resources/get-pnbp/`,
         body,
@@ -376,16 +397,19 @@ const ThridRoute = () => {
         },
       );
 
-      const {status, data} = response;
+      const { status, data } = response;
 
       if (status === 200) {
         setDataPnbpIntal(data.data);
+        dispatch(setLoading(false));
       } else {
+        dispatch(setLoading(false));
         //Alert.alert(error);
       }
     } catch (error) {
       //console.log(error.response);
       //Alert.alert(error)
+      dispatch(setLoading(false));
     }
   };
 
@@ -396,7 +420,7 @@ const ThridRoute = () => {
   return (
     <>
       <Container>
-      <Text>PNBP Izin Tinggal</Text>
+        <Text>PNBP Izin Tinggal</Text>
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
@@ -417,7 +441,7 @@ const ThridRoute = () => {
         {dataPnbpIntal.length > 0 && (
           <Scroltable horizontal>
             <LineChart
-              onDataPointClick={({value, getColor}) =>
+              onDataPointClick={({ value, getColor }) =>
                 showMessage({
                   message: `${value}`,
                   description: 'You selected this value',
@@ -439,10 +463,9 @@ const ThridRoute = () => {
               xLabelsOffset={8}
               horizontalLabelRotation={-10}
               verticalLabelRotation={-10}
-              onDataPointClick={({value, index}) => {
-                const message = `${
-                  dataPnbpIntal[index].periode
-                } - ${numberWithCommas(value)}`;
+              onDataPointClick={({ value, index }) => {
+                const message = `${dataPnbpIntal[index].periode
+                  } - ${numberWithCommas(value)}`;
                 console.log(message);
                 dispatch(
                   setToast({
@@ -543,6 +566,7 @@ const FourthRoute = () => {
         Authorization: null,
       };
 
+      dispatch(setLoading(true));
       const response = await Axios.get(
         `${BASE_URL}/resources/intal-byKelaminPer10hari/${selectedSatker}`,
         {
@@ -550,14 +574,16 @@ const FourthRoute = () => {
         },
       );
 
-      const {status, data} = response;
+      const { status, data } = response;
       if (status === 200) {
         setPemohonPNBP(data.data);
+        dispatch(setLoading(false));
       } else {
-        // dispatch(setLoading(false));
+        dispatch(setLoading(false));
       }
     } catch (error) {
       console.warn(error);
+      dispatch(setLoading(false));
     }
   };
 
@@ -571,7 +597,7 @@ const FourthRoute = () => {
         headers,
       });
 
-      const {data, status} = response;
+      const { data, status } = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -581,7 +607,7 @@ const FourthRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getdataPnbpPnbp = async () => {
@@ -595,6 +621,7 @@ const FourthRoute = () => {
         Authorization: null,
       };
 
+      dispatch(setLoading(true));
       const response = await Axios.post(
         `${BASE_URL}/resources/get-pnbp/`,
         body,
@@ -603,18 +630,21 @@ const FourthRoute = () => {
         },
       );
 
-      const {status, data} = response;
+      const { status, data } = response;
       if (status === 200) {
         setDataPnbpPnbp(data.data);
+        dispatch(setLoading(false));
       } else {
         //Alert.alert(error);
+        dispatch(setLoading(false));
       }
     } catch (error) {
+      dispatch(setLoading(false));
       //console.log(error.response);
       //Alert.alert(error)
     }
   };
-  
+
   const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
@@ -622,7 +652,7 @@ const FourthRoute = () => {
   return (
     <>
       <Container>
-      <Text>PNBP Lainnya</Text>
+        <Text>PNBP Lainnya</Text>
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
@@ -643,7 +673,7 @@ const FourthRoute = () => {
         {dataPnbpPnbp.length > 0 && (
           <Scroltable horizontal>
             <LineChart
-              onDataPointClick={({value, getColor}) =>
+              onDataPointClick={({ value, getColor }) =>
                 showMessage({
                   message: `${value}`,
                   description: 'You selected this value',
@@ -665,10 +695,9 @@ const FourthRoute = () => {
               xLabelsOffset={8}
               horizontalLabelRotation={-10}
               verticalLabelRotation={-10}
-              onDataPointClick={({value, index}) => {
-                const message = `${
-                  dataPnbpPnbp[index].periode
-                } - ${numberWithCommas(value)}`;
+              onDataPointClick={({ value, index }) => {
+                const message = `${dataPnbpPnbp[index].periode
+                  } - ${numberWithCommas(value)}`;
                 console.log(message);
                 dispatch(
                   setToast({
