@@ -195,7 +195,7 @@ const FirstRoute = () => {
               ],
             }}
             width={Dimensions.get('screen').width - 20} // from react-native
-            height={250}
+            height={500}
             yAxisInterval={1} // optional, defaults to 1
             yLabelsOffset={-4}
             xLabelsOffset={8}
@@ -281,16 +281,87 @@ const SecondRoute = () => {
 const ThridRoute = () => {
   const accessToken = useSelector((state) => state.accessToken);
   const [dataPnbpIntal, setDataPnbpIntal] = useState([]);
+  const [satkerDropdown, setSatkerDropdown] = useState([]);
+  const [selectedSatker, setSelectedSatker] = useState(0);
+  const [pemohonIntal, setPemohonIntal] = useState([]);
+  const [dataPerwilayah, setDataPerwilayah] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getdataPnbpIntal();
-  }, []);
+    GetSatker();
+    getPemohonIntal();
+  }, [selectedSatker]);
+
+  const getPemohonIntal = async () => {
+    try {
+      const headers = {
+        Authorization: null,
+      };
+
+      const response = await Axios.get(
+        `${BASE_URL}/resources/intal-byKelaminPer10hari/${selectedSatker}`,
+        {
+          headers,
+        },
+      );
+
+      const {status, data} = response;
+      if (status === 200) {
+        setPemohonIntal(data.data);
+      } else {
+        // dispatch(setLoading(false));
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  const chartConfig = {
+    backgroundColor: '#e26a00',
+    backgroundGradientFrom: '#fb8c00',
+    backgroundGradientTo: '#ffa726',
+    decimalPlaces: 0, // optional, defaults to 2dp
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    style: {
+      borderRadius: 30,
+    },
+    propsForDots: {
+      r: '3',
+      strokeWidth: 5,
+      stroke: '#fff',
+    },
+  };
+
+  const GetSatker = async () => {
+    try {
+      const headers = {
+        Authorization: accessToken,
+      };
+
+      const response = await Axios.get(`${BASE_URL}/resources/satker`, {
+        headers,
+      });
+
+      const {data, status} = response;
+      if (status === 200) {
+        const satker = data.data;
+        const satkerArr = [];
+        for (const iterator of satker) {
+          satkerArr.push(iterator);
+        }
+        setSatkerDropdown(satkerArr);
+        setSatker(data.data);
+      }
+    } catch (error) {}
+  };
 
   const getdataPnbpIntal = async () => {
     try {
       const body = {
         id_layanan: 3,
-        id_kantor: 1,
+        id_kantor: selectedSatker,
       };
 
       const headers = {
@@ -317,9 +388,31 @@ const ThridRoute = () => {
       //Alert.alert(error)
     }
   };
+
+  const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
   return (
     <>
       <Container>
+      <Text>PNBP Izin Tinggal</Text>
+        <PickerContainer>
+          <Picker
+            selectedValue={selectedSatker}
+            onValueChange={(itemValue, itemPosition) =>
+              setSelectedSatker(itemValue)
+            }>
+            <Picker.Item value={0} label="SEMUA SATUAN KERJA" />
+            {satkerDropdown.map((item, index) => (
+              <Picker.Item
+                key={index}
+                label={item.nama_kantor}
+                value={item.id_kantor}
+              />
+            ))}
+          </Picker>
+        </PickerContainer>
         <Text>Izin Tinggal</Text>
         {dataPnbpIntal.length > 0 && (
           <Scroltable horizontal>
@@ -339,33 +432,74 @@ const ThridRoute = () => {
                   },
                 ],
               }}
-              width={Dimensions.get('window').width} // from react-native
-              height={300}
+              width={Dimensions.get('screen').width - 20} // from react-native
+              height={250}
               yAxisInterval={1} // optional, defaults to 1
-              chartConfig={{
-                backgroundColor: '#e26a00',
-                backgroundGradientFrom: '#fb8c00',
-                backgroundGradientTo: '#ffa726',
-                decimalPlaces: 0, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                  borderRadius: 30,
-                  paddingLeft: 50,
-                },
-                propsForDots: {
-                  r: '6',
-                  strokeWidth: 4,
-                  stroke: '#ffa726',
-                },
+              yLabelsOffset={-4}
+              xLabelsOffset={8}
+              horizontalLabelRotation={-10}
+              verticalLabelRotation={-10}
+              onDataPointClick={({value, index}) => {
+                const message = `${
+                  dataPnbpIntal[index].periode
+                } - ${numberWithCommas(value)}`;
+                console.log(message);
+                dispatch(
+                  setToast({
+                    success: true,
+                    message,
+                    closeToast: () => dispatch(setToast(null)),
+                  }),
+                );
               }}
+              chartConfig={chartConfig}
               bezier
               style={{
                 marginVertical: 8,
                 borderRadius: 10,
+                width: '100%',
               }}
             />
           </Scroltable>
+        )}
+        <Line />
+        <Text>Permohonan Izin Tinggal 10 Hari Terkahir</Text>
+        {pemohonIntal.length > 0 && (
+          <PieChart
+            data={[
+              {
+                name: 'LAKI - LAKI',
+                population: pemohonIntal[0].laki,
+                color: '#fb8500',
+                legendFontColor: '#FFF',
+                legendFontSize: 13,
+              },
+              {
+                name: 'PEREMPUAN',
+                population: pemohonIntal[0].perempuan,
+                color: '#ef476f',
+                legendFontColor: '#FFF',
+                legendFontSize: 13,
+              },
+            ]}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={220}
+            chartConfig={{
+              color: (opacity = 1) => `white`,
+              labelColor: (opacity = 1) => `white`,
+              style: {
+                borderRadius: 16,
+              },
+            }}
+            backgroundColor="#48cae4"
+            accessor="population"
+            paddingLeft="15"
+            absolute
+            style={{
+              marginVertical: 8,
+              borderRadius: 16,
+            }}
+          />
         )}
       </Container>
     </>
@@ -375,16 +509,86 @@ const ThridRoute = () => {
 const FourthRoute = () => {
   const accessToken = useSelector((state) => state.accessToken);
   const [dataPnbpPnbp, setDataPnbpPnbp] = useState([]);
+  const [satkerDropdown, setSatkerDropdown] = useState([]);
+  const [selectedSatker, setSelectedSatker] = useState(0);
+  const [pemohonPNBP, setPemohonPNBP] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getdataPnbpPnbp();
-  }, []);
+    GetSatker();
+    getPemohonPNBP();
+  }, [selectedSatker]);
+
+  const chartConfig = {
+    backgroundColor: '#e26a00',
+    backgroundGradientFrom: '#fb8c00',
+    backgroundGradientTo: '#ffa726',
+    decimalPlaces: 0, // optional, defaults to 2dp
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    style: {
+      borderRadius: 30,
+    },
+    propsForDots: {
+      r: '3',
+      strokeWidth: 5,
+      stroke: '#fff',
+    },
+  };
+
+  const getPemohonPNBP = async () => {
+    try {
+      const headers = {
+        Authorization: null,
+      };
+
+      const response = await Axios.get(
+        `${BASE_URL}/resources/intal-byKelaminPer10hari/${selectedSatker}`,
+        {
+          headers,
+        },
+      );
+
+      const {status, data} = response;
+      if (status === 200) {
+        setPemohonPNBP(data.data);
+      } else {
+        // dispatch(setLoading(false));
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  const GetSatker = async () => {
+    try {
+      const headers = {
+        Authorization: accessToken,
+      };
+
+      const response = await Axios.get(`${BASE_URL}/resources/satker`, {
+        headers,
+      });
+
+      const {data, status} = response;
+      if (status === 200) {
+        const satker = data.data;
+        const satkerArr = [];
+        for (const iterator of satker) {
+          satkerArr.push(iterator);
+        }
+        setSatkerDropdown(satkerArr);
+        setSatker(data.data);
+      }
+    } catch (error) {}
+  };
 
   const getdataPnbpPnbp = async () => {
     try {
       const body = {
         id_layanan: 4,
-        id_kantor: 1,
+        id_kantor: selectedSatker,
       };
 
       const headers = {
@@ -410,9 +614,31 @@ const FourthRoute = () => {
       //Alert.alert(error)
     }
   };
+  
+  const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
   return (
     <>
       <Container>
+      <Text>PNBP Lainnya</Text>
+        <PickerContainer>
+          <Picker
+            selectedValue={selectedSatker}
+            onValueChange={(itemValue, itemPosition) =>
+              setSelectedSatker(itemValue)
+            }>
+            <Picker.Item value={0} label="SEMUA SATUAN KERJA" />
+            {satkerDropdown.map((item, index) => (
+              <Picker.Item
+                key={index}
+                label={item.nama_kantor}
+                value={item.id_kantor}
+              />
+            ))}
+          </Picker>
+        </PickerContainer>
         <Text>PNBP Lainnya</Text>
         {dataPnbpPnbp.length > 0 && (
           <Scroltable horizontal>
@@ -432,33 +658,74 @@ const FourthRoute = () => {
                   },
                 ],
               }}
-              width={Dimensions.get('window').width} // from react-native
-              height={300}
+              width={Dimensions.get('screen').width - 20} // from react-native
+              height={250}
               yAxisInterval={1} // optional, defaults to 1
-              chartConfig={{
-                backgroundColor: '#e26a00',
-                backgroundGradientFrom: '#fb8c00',
-                backgroundGradientTo: '#ffa726',
-                decimalPlaces: 0, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                  borderRadius: 30,
-                  paddingLeft: 50,
-                },
-                propsForDots: {
-                  r: '6',
-                  strokeWidth: 4,
-                  stroke: '#ffa726',
-                },
+              yLabelsOffset={-4}
+              xLabelsOffset={8}
+              horizontalLabelRotation={-10}
+              verticalLabelRotation={-10}
+              onDataPointClick={({value, index}) => {
+                const message = `${
+                  dataPnbpPnbp[index].periode
+                } - ${numberWithCommas(value)}`;
+                console.log(message);
+                dispatch(
+                  setToast({
+                    success: true,
+                    message,
+                    closeToast: () => dispatch(setToast(null)),
+                  }),
+                );
               }}
+              chartConfig={chartConfig}
               bezier
               style={{
                 marginVertical: 8,
                 borderRadius: 10,
+                width: '100%',
               }}
             />
           </Scroltable>
+        )}
+        <Line />
+        <Text>Permohonan PNBP Lainnya 10 Hari Terkahir</Text>
+        {pemohonPNBP.length > 0 && (
+          <PieChart
+            data={[
+              {
+                name: 'LAKI - LAKI',
+                population: pemohonPNBP[0].laki,
+                color: '#fb8500',
+                legendFontColor: '#FFF',
+                legendFontSize: 13,
+              },
+              {
+                name: 'PEREMPUAN',
+                population: pemohonPNBP[0].perempuan,
+                color: '#ef476f',
+                legendFontColor: '#FFF',
+                legendFontSize: 13,
+              },
+            ]}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={220}
+            chartConfig={{
+              color: (opacity = 1) => `white`,
+              labelColor: (opacity = 1) => `white`,
+              style: {
+                borderRadius: 16,
+              },
+            }}
+            backgroundColor="#48cae4"
+            accessor="population"
+            paddingLeft="15"
+            absolute
+            style={{
+              marginVertical: 8,
+              borderRadius: 16,
+            }}
+          />
         )}
       </Container>
     </>
