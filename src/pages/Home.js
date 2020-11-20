@@ -1,35 +1,35 @@
 import styled from 'styled-components/native';
-import { View, Dimensions, StatusBar, Text } from 'react-native';
-import { TabView, SceneMap } from 'react-native-tab-view';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import {View, Dimensions, StatusBar, Text, ToastAndroid} from 'react-native';
+import {TabView, SceneMap} from 'react-native-tab-view';
+import {Provider, useSelector, useDispatch} from 'react-redux';
 import Axios from 'axios';
-import { BASE_URL } from '../helpers/global';
-import React, { useRef, useState, useEffect } from 'react';
+import {BASE_URL} from '../helpers/global';
+import React, {useRef, useState, useEffect} from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
-import { Alert } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+import {Alert} from 'react-native';
 import {
   LineChart,
   BarChart,
   PieChart,
   ProgressChart,
   ContributionGraph,
-  StackedBarChart
-} from "react-native-chart-kit"
-import { ScrollView } from 'react-native-gesture-handler';
-import FlashMessage, { showMessage } from "react-native-flash-message";
-import { setLoading } from '../store/actionCreator';
+  StackedBarChart,
+} from 'react-native-chart-kit';
+import {ScrollView} from 'react-native-gesture-handler';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {setLoading, setToast} from '../store/actionCreator';
 
-const initialLayout = { width: Dimensions.get('window').width };
+const initialLayout = {width: Dimensions.get('window').width};
 
-export default function Home({ navigation }) {
+export default function Home({navigation}) {
   const [index, setIndex] = useState(0);
 
   const [routes] = useState([
-    { key: 'first', title: 'Paspor' },
-    { key: 'second', title: 'Visa' },
-    { key: 'thrid', title: 'Izin Tinggal' },
-    { key: 'fourth', title: 'PNBP Lainnya' },
+    {key: 'first', title: 'Paspor'},
+    {key: 'second', title: 'Visa'},
+    {key: 'thrid', title: 'Izin Tinggal'},
+    {key: 'fourth', title: 'PNBP Lainnya'},
   ]);
 
   const renderScene = SceneMap({
@@ -41,13 +41,14 @@ export default function Home({ navigation }) {
 
   return (
     <>
-        <StatusBar backgroundColor="#2196f3" barStyle="light-content" />
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={initialLayout}
-        />
+      <StatusBar backgroundColor="#2196f3" barStyle="light-content" />
+      <TabView
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={initialLayout}
+      />
+      <FlashMessage position="bottom" />
     </>
   );
 }
@@ -58,14 +59,31 @@ const FirstRoute = () => {
   const [pemohonPaspor, setPemohonPaspor] = useState([]);
   const [satkerDropdown, setSatkerDropdown] = useState([]);
   const [selectedSatker, setSelectedSatker] = useState(0);
+  const [dataPerwilayah, setDataPerwilayah] = useState([]);
   const dispatch = useDispatch();
-  const get_id_kantor = useState(0);
+
+  const chartConfig = {
+    backgroundColor: '#e26a00',
+    backgroundGradientFrom: '#fb8c00',
+    backgroundGradientTo: '#ffa726',
+    decimalPlaces: 0, // optional, defaults to 2dp
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    style: {
+      borderRadius: 30,
+    },
+    propsForDots: {
+      r: '3',
+      strokeWidth: 5,
+      stroke: '#fff',
+    },
+  };
 
   useEffect(() => {
     getPemohonPaspor();
     getdataPnbpPaspor();
     GetSatker();
-  }, [selectedSatker])
+  }, [selectedSatker]);
 
   const GetSatker = async () => {
     try {
@@ -77,7 +95,7 @@ const FirstRoute = () => {
         headers,
       });
 
-      const { data, status } = response;
+      const {data, status} = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -87,8 +105,7 @@ const FirstRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const getdataPnbpPaspor = async () => {
@@ -102,19 +119,21 @@ const FirstRoute = () => {
         Authorization: null,
       };
 
-      const response = await Axios.post(`${BASE_URL}/resources/get-pnbp/`, body, {
-        headers,
-      });
+      const response = await Axios.post(
+        `${BASE_URL}/resources/get-pnbp/`,
+        body,
+        {
+          headers,
+        },
+      );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPnbpPaspor(data.data);
-      }
-      else {
+      } else {
         //        dispatch(setLoading(false));
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const getPemohonPaspor = async () => {
@@ -123,19 +142,26 @@ const FirstRoute = () => {
         Authorization: null,
       };
 
-      const response = await Axios.get(`${BASE_URL}/resources/paspor-byKelaminPer10hari/`, {
-        headers,
-      });
+      const response = await Axios.get(
+        `${BASE_URL}/resources/paspor-byKelaminPer10hari/${selectedSatker}`,
+        {
+          headers,
+        },
+      );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setPemohonPaspor(data.data);
-      }
-      else {
+      } else {
         // dispatch(setLoading(false));
       }
     } catch (error) {
+      console.warn(error);
     }
+  };
+
+  const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
 
   return (
@@ -145,7 +171,9 @@ const FirstRoute = () => {
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
-            onValueChange={(itemValue, itemPosition) => setSelectedSatker(itemValue)}>
+            onValueChange={(itemValue, itemPosition) =>
+              setSelectedSatker(itemValue)
+            }>
             <Picker.Item value={0} label="SEMUA SATUAN KERJA" />
             {satkerDropdown.map((item, index) => (
               <Picker.Item
@@ -156,85 +184,85 @@ const FirstRoute = () => {
             ))}
           </Picker>
         </PickerContainer>
-        <Scroltable horizontal>
         {dataPnbpPaspor.length > 0 && (
           <LineChart
             data={{
               labels: dataPnbpPaspor.map((v) => v.periode),
               datasets: [
                 {
-                  data: dataPnbpPaspor.map((v) => parseInt(v.total))
-                }
-              ]
+                  data: dataPnbpPaspor.map((v) => parseInt(v.total)),
+                },
+              ],
             }}
-            width={Dimensions.get("window").width} // from react-native
+            width={Dimensions.get('screen').width - 20} // from react-native
             height={250}
             yAxisInterval={1} // optional, defaults to 1
-            yLabelsOffset={-10}
-            xLabelsOffset={2}
-            chartConfig={{
-              backgroundColor: "#e26a00",
-              backgroundGradientFrom: "#fb8c00",
-              backgroundGradientTo: "#ffa726",
-              decimalPlaces: 0, // optional, defaults to 2dp
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
-                borderRadius: 30
-              },
-              propsForDots: {
-                r: "3",
-                strokeWidth: 2,
-                stroke: "#fff"
-              },
+            yLabelsOffset={-4}
+            xLabelsOffset={8}
+            horizontalLabelRotation={-10}
+            verticalLabelRotation={-10}
+            onDataPointClick={({value, index}) => {
+              const message = `${
+                dataPnbpPaspor[index].periode
+              } - ${numberWithCommas(value)}`;
+              console.log(message);
+              dispatch(
+                setToast({
+                  success: true,
+                  message,
+                  closeToast: () => dispatch(setToast(null)),
+                }),
+              );
             }}
+            chartConfig={chartConfig}
             bezier
             style={{
               marginVertical: 8,
-              borderRadius: 10
+              borderRadius: 10,
+              width: '100%',
             }}
           />
         )}
-        </Scroltable>
-        <Line/>
+        <Line />
         <Text>Permohonan Paspor 10 Hari Terkahir</Text>
         {pemohonPaspor.length > 0 && (
           <PieChart
-          data={[
-            {
-              name: "LAKI - LAKI",
-              population: pemohonPaspor[0].laki,
-              color: "#fb8500",
-              legendFontColor: "#FFF",
-              legendFontSize: 13
-            },
-            {
-              name: "PEREMPUAN",
-              population: pemohonPaspor[0].perempuan,
-              color: "#ef476f",
-              legendFontColor: "#FFF",
-              legendFontSize: 13
-            }
-          ]}
-          width={Dimensions.get("window").width} // from react-native
-          height={220}
-          chartConfig={{
+            data={[
+              {
+                name: 'LAKI - LAKI',
+                population: pemohonPaspor[0].laki,
+                color: '#fb8500',
+                legendFontColor: '#FFF',
+                legendFontSize: 13,
+              },
+              {
+                name: 'PEREMPUAN',
+                population: pemohonPaspor[0].perempuan,
+                color: '#ef476f',
+                legendFontColor: '#FFF',
+                legendFontSize: 13,
+              },
+            ]}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={220}
+            chartConfig={{
               color: (opacity = 1) => `white`,
               labelColor: (opacity = 1) => `white`,
               style: {
-                  borderRadius: 16
-              }
-          }}
-          backgroundColor="#48cae4"
-          accessor="population"
-          paddingLeft="15"
-          absolute
-          style={{
+                borderRadius: 16,
+              },
+            }}
+            backgroundColor="#48cae4"
+            accessor="population"
+            paddingLeft="15"
+            absolute
+            style={{
               marginVertical: 8,
-              borderRadius: 16
-          }}
-        />
+              borderRadius: 16,
+            }}
+          />
         )}
+        {/* DATA PERWILAYAH */}
       </Container>
     </>
   );
@@ -255,8 +283,8 @@ const ThridRoute = () => {
   const [dataPnbpIntal, setDataPnbpIntal] = useState([]);
 
   useEffect(() => {
-    getdataPnbpIntal()
-  }, [])
+    getdataPnbpIntal();
+  }, []);
 
   const getdataPnbpIntal = async () => {
     try {
@@ -269,16 +297,19 @@ const ThridRoute = () => {
         Authorization: null,
       };
 
-      const response = await Axios.post(`${BASE_URL}/resources/get-pnbp/`, body, {
-        headers,
-      });
+      const response = await Axios.post(
+        `${BASE_URL}/resources/get-pnbp/`,
+        body,
+        {
+          headers,
+        },
+      );
 
-      const { status, data } = response;
+      const {status, data} = response;
 
       if (status === 200) {
         setDataPnbpIntal(data.data);
-      }
-      else {
+      } else {
         //Alert.alert(error);
       }
     } catch (error) {
@@ -293,45 +324,45 @@ const ThridRoute = () => {
         {dataPnbpIntal.length > 0 && (
           <Scroltable horizontal>
             <LineChart
-              onDataPointClick={({ value, getColor }) =>
+              onDataPointClick={({value, getColor}) =>
                 showMessage({
                   message: `${value}`,
-                  description: "You selected this value",
-                  backgroundColor: getColor(0.9)
+                  description: 'You selected this value',
+                  backgroundColor: getColor(0.9),
                 })
               }
               data={{
                 labels: dataPnbpIntal.map((v) => v.periode),
                 datasets: [
                   {
-                    data: dataPnbpIntal.map((v) => parseInt(v.total))
-                  }
-                ]
+                    data: dataPnbpIntal.map((v) => parseInt(v.total)),
+                  },
+                ],
               }}
-              width={Dimensions.get("window").width} // from react-native
+              width={Dimensions.get('window').width} // from react-native
               height={300}
               yAxisInterval={1} // optional, defaults to 1
               chartConfig={{
-                backgroundColor: "#e26a00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
+                backgroundColor: '#e26a00',
+                backgroundGradientFrom: '#fb8c00',
+                backgroundGradientTo: '#ffa726',
                 decimalPlaces: 0, // optional, defaults to 2dp
                 color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                 labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                 style: {
                   borderRadius: 30,
-                  paddingLeft: 50
+                  paddingLeft: 50,
                 },
                 propsForDots: {
-                  r: "6",
+                  r: '6',
                   strokeWidth: 4,
-                  stroke: "#ffa726"
-                }
+                  stroke: '#ffa726',
+                },
               }}
               bezier
               style={{
                 marginVertical: 8,
-                borderRadius: 10
+                borderRadius: 10,
               }}
             />
           </Scroltable>
@@ -346,8 +377,8 @@ const FourthRoute = () => {
   const [dataPnbpPnbp, setDataPnbpPnbp] = useState([]);
 
   useEffect(() => {
-    getdataPnbpPnbp()
-  }, [])
+    getdataPnbpPnbp();
+  }, []);
 
   const getdataPnbpPnbp = async () => {
     try {
@@ -360,15 +391,18 @@ const FourthRoute = () => {
         Authorization: null,
       };
 
-      const response = await Axios.post(`${BASE_URL}/resources/get-pnbp/`, body, {
-        headers,
-      });
+      const response = await Axios.post(
+        `${BASE_URL}/resources/get-pnbp/`,
+        body,
+        {
+          headers,
+        },
+      );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPnbpPnbp(data.data);
-      }
-      else {
+      } else {
         //Alert.alert(error);
       }
     } catch (error) {
@@ -383,45 +417,45 @@ const FourthRoute = () => {
         {dataPnbpPnbp.length > 0 && (
           <Scroltable horizontal>
             <LineChart
-              onDataPointClick={({ value, getColor }) =>
+              onDataPointClick={({value, getColor}) =>
                 showMessage({
                   message: `${value}`,
-                  description: "You selected this value",
-                  backgroundColor: getColor(0.9)
+                  description: 'You selected this value',
+                  backgroundColor: getColor(0.9),
                 })
               }
               data={{
                 labels: dataPnbpPnbp.map((v) => v.periode),
                 datasets: [
                   {
-                    data: dataPnbpPnbp.map((v) => parseInt(v.total))
-                  }
-                ]
+                    data: dataPnbpPnbp.map((v) => parseInt(v.total)),
+                  },
+                ],
               }}
-              width={Dimensions.get("window").width} // from react-native
+              width={Dimensions.get('window').width} // from react-native
               height={300}
               yAxisInterval={1} // optional, defaults to 1
               chartConfig={{
-                backgroundColor: "#e26a00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
+                backgroundColor: '#e26a00',
+                backgroundGradientFrom: '#fb8c00',
+                backgroundGradientTo: '#ffa726',
                 decimalPlaces: 0, // optional, defaults to 2dp
                 color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                 labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                 style: {
                   borderRadius: 30,
-                  paddingLeft: 50
+                  paddingLeft: 50,
                 },
                 propsForDots: {
-                  r: "6",
+                  r: '6',
                   strokeWidth: 4,
-                  stroke: "#ffa726"
-                }
+                  stroke: '#ffa726',
+                },
               }}
               bezier
               style={{
                 marginVertical: 8,
-                borderRadius: 10
+                borderRadius: 10,
               }}
             />
           </Scroltable>
@@ -432,10 +466,10 @@ const FourthRoute = () => {
 };
 
 const Line = styled.View`
-width: 100%;
-border-bottom-width: 1px;
-border-bottom-color: #dadada;
-margin-vertical: 5px;
+  width: 100%;
+  border-bottom-width: 1px;
+  border-bottom-color: #dadada;
+  margin-vertical: 5px;
 `;
 const Scroltable = styled.ScrollView`
   flex: 1;

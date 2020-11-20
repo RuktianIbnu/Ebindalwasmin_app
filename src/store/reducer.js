@@ -1,4 +1,4 @@
-import {SET_USER, SET_ACCESS_TOKEN, SET_LOADING} from './actions';
+import {SET_USER, SET_ACCESS_TOKEN, SET_LOADING, SET_TOAST} from './actions';
 
 export const user = (state = null, action) => {
   const {type, payload} = action;
@@ -29,6 +29,17 @@ export const loading = (state = false, action) => {
 
   switch (type) {
     case SET_LOADING:
+      return payload;
+
+    default:
+      return state;
+  }
+};
+
+export const toast = (state = null, action) => {
+  const {type, payload} = action;
+  switch (type) {
+    case SET_TOAST:
       return payload;
 
     default:

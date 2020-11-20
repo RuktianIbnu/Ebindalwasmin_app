@@ -10,6 +10,7 @@ import Login from './src/pages/Login';
 import Report from './src/pages/Report';
 import Home from './src/pages/Home';
 import Loading from './src/components/Loading';
+import Toast from './src/components/Toast';
 import Administrasi from './src/pages/Administrasi';
 
 const Stack = createStackNavigator();
@@ -45,14 +46,13 @@ const DrawerNav = () => {
 
 const Nav = () => {
   const loading = useSelector((state) => state.loading);
+  const toast = useSelector((state) => state.toast);
   const accessToken = useSelector((state) => state.accessToken);
   return (
     <>
       {/* <StatusBar hidden={loading} /> */}
       <NavigationContainer theme={MyTheme}>
-
         <Stack.Navigator>
-
           {accessToken === null ? (
             <Stack.Screen
               name="login"
@@ -69,6 +69,7 @@ const Nav = () => {
         </Stack.Navigator>
       </NavigationContainer>
       {loading && <Loading />}
+      {toast && <Toast {...toast} />}
     </>
   );
 };
