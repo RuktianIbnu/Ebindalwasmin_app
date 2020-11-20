@@ -185,7 +185,7 @@ const FirstRoute = () => {
   return (
     <>
       <Container>
-        <Text>PNBP Paspor</Text>
+        <Line/>
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
@@ -202,6 +202,7 @@ const FirstRoute = () => {
             ))}
           </Picker>
         </PickerContainer>
+        <Text>PNBP Paspor</Text>
         {dataPnbpPaspor.length > 0 && (
           <LineChart
             data={{
@@ -213,7 +214,7 @@ const FirstRoute = () => {
               ],
             }}
             width={Dimensions.get('screen').width - 20} // from react-native
-            height={500}
+            height={250}
             yAxisInterval={1} // optional, defaults to 1
             yLabelsOffset={-4}
             xLabelsOffset={8}
@@ -420,7 +421,7 @@ const ThridRoute = () => {
   return (
     <>
       <Container>
-        <Text>PNBP Izin Tinggal</Text>
+      <Line/>
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
@@ -437,7 +438,7 @@ const ThridRoute = () => {
             ))}
           </Picker>
         </PickerContainer>
-        <Text>Izin Tinggal</Text>
+        <Text>PNBP Izin Tinggal</Text>
         {dataPnbpIntal.length > 0 && (
           <Scroltable horizontal>
             <LineChart
@@ -652,7 +653,7 @@ const FourthRoute = () => {
   return (
     <>
       <Container>
-        <Text>PNBP Lainnya</Text>
+      <Line/>
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
