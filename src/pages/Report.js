@@ -242,7 +242,7 @@ export default function Report() {
                   <DataTable.Title style={{ maxWidth: 40 }}>No</DataTable.Title>
                   <DataTable.Title>Tanggal</DataTable.Title>
                   <DataTable.Title>Jenis PNBP</DataTable.Title>
-                  <DataTable.Title numeric>Totral</DataTable.Title>
+                  <DataTable.Title numeric>Total</DataTable.Title>
                 </DataTable.Header>
               )}
             {toggleCheckBox ? (

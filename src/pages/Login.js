@@ -62,7 +62,8 @@ export default function Login({ navigation }) {
   return (
     <>
       <Container>
-        <TitleApp>e-Bindalwasmin</TitleApp>
+        <TitleApp>SISTEM INFORMASI ELEKTRONIK KEIMIGRASIAN (SIKOK)</TitleApp>
+        <TextInfo>Kantor Wilayah Kemenkumham Bangka Belitung</TextInfo>
         <MapImage source={imageMap} />
         <InputEmailContainer>
           <InputEmail
@@ -99,7 +100,6 @@ export default function Login({ navigation }) {
         <LoginButton onPress={() => submit()}>
           <LoginButtonText>Login</LoginButtonText>
         </LoginButton>
-        <TextInfo>Kantor Wilayah Bangka Belitung</TextInfo>
       </Container>
     </>
   );
