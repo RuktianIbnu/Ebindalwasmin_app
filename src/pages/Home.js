@@ -43,9 +43,9 @@ export default function Home({ navigation }) {
 
   return (
     <>
-      <StatusBar backgroundColor="#4361ee" barStyle="light-content"/>
+      <StatusBar backgroundColor="#4361ee" barStyle="light-content" />
       <TabView
-        labelStyle={{fontSize:1}}
+        labelStyle={{ fontSize: 1 }}
         navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
@@ -69,34 +69,50 @@ const AllRoute = () => {
 const FirstRoute = () => {
   const accessToken = useSelector((state) => state.accessToken);
   const [dataPnbpPaspor, setDataPnbpPaspor] = useState([]);
+  const [dataPerwilayahPaspor, setDataPerwilayahPaspor] = useState([]);
   const [pemohonPaspor, setPemohonPaspor] = useState([]);
   const [satkerDropdown, setSatkerDropdown] = useState([]);
   const [selectedSatker, setSelectedSatker] = useState(0);
-  const [dataPerwilayah, setDataPerwilayah] = useState([]);
   const dispatch = useDispatch();
-
-  const chartConfig = {
-    backgroundColor: '#e26a00',
-    backgroundGradientFrom: '#fb8c00',
-    backgroundGradientTo: '#ffa726',
-    decimalPlaces: 0, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    style: {
-      borderRadius: 30,
-    },
-    propsForDots: {
-      r: '3',
-      strokeWidth: 5,
-      stroke: '#fff',
-    },
-  };
 
   useEffect(() => {
     getPemohonPaspor();
     getdataPnbpPaspor();
+    getPivotPerwilayah();
     GetSatker();
   }, [selectedSatker]);
+
+  const getPivotPerwilayah = async () => {
+    try {
+      const body = {
+        id_jenis: 1,
+        id_kantor: selectedSatker,
+        tahun: 2020,
+      };
+
+      const headers = {
+        Authorization: null,
+      };
+
+      //dispatch(setLoading(true));
+      const response = await Axios.post(
+        `${BASE_URL}/resources/get-PivotPerwilayah/`,
+        body,
+        {
+          headers,
+        },
+      );
+
+      const { status, data } = response;
+      if (status === 200) {
+        setDataPerwilayahPaspor(data.data);
+        console.log(data.data)
+        //dispatch(setLoading(false));
+      } else {
+        //dispatch(setLoading(false));
+      }
+    } catch (error) { dispatch(setLoading(false)); }
+  };
 
   const GetSatker = async () => {
     try {
@@ -148,7 +164,7 @@ const FirstRoute = () => {
       } else {
         dispatch(setLoading(false));
       }
-    } catch (error) { dispatch(setLoading(false));}
+    } catch (error) { dispatch(setLoading(false)); }
   };
 
   const getPemohonPaspor = async () => {
@@ -182,10 +198,28 @@ const FirstRoute = () => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
 
+  const chartConfig = {
+    backgroundColor: '#e63946',
+    backgroundGradientFrom: '#03045e',
+    backgroundGradientTo: '#03045e',
+    decimalPlaces: 0, // optional, defaults to 2dp
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    style: {
+      borderRadius: 30,
+    },
+    propsForDots: {
+      r: '2',
+      strokeWidth: 5,
+      stroke: '#fdffff',
+    },
+  };
+
+
   return (
     <>
       <Container>
-        <Line/>
+        <Line />
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
@@ -222,7 +256,7 @@ const FirstRoute = () => {
             verticalLabelRotation={-10}
             onDataPointClick={({ value, index }) => {
               const message = `${dataPnbpPaspor[index].periode
-                } - ${numberWithCommas(value)}`;
+                } - ${'Rp ' + numberWithCommas(value)}`;
               console.log(message);
               dispatch(
                 setToast({
@@ -249,15 +283,15 @@ const FirstRoute = () => {
               {
                 name: 'LAKI - LAKI',
                 population: pemohonPaspor[0].laki,
-                color: '#fb8500',
-                legendFontColor: '#FFF',
+                color: '#d00000',
+                legendFontColor: '#000000',
                 legendFontSize: 13,
               },
               {
                 name: 'PEREMPUAN',
                 population: pemohonPaspor[0].perempuan,
-                color: '#ef476f',
-                legendFontColor: '#FFF',
+                color: '#4ea8de',
+                legendFontColor: '#000000',
                 legendFontSize: 13,
               },
             ]}
@@ -270,7 +304,7 @@ const FirstRoute = () => {
                 borderRadius: 16,
               },
             }}
-            backgroundColor="#48cae4"
+            backgroundColor="#f1faee"
             accessor="population"
             paddingLeft="15"
             absolute
@@ -280,7 +314,79 @@ const FirstRoute = () => {
             }}
           />
         )}
+        <Line />
         {/* DATA PERWILAYAH */}
+          <Text>{`PNBP Paspor Perwilayah Pertahun ` + dataPerwilayahPaspor[0].tahun}</Text>
+        {dataPerwilayahPaspor.length > 0 && (
+          <LineChart
+            data={{
+              labels: dataPerwilayahPaspor.map((v) => v.wilayah),
+              datasets: [
+                {
+                  data: dataPerwilayahPaspor.map((v) => parseInt(v.total)),
+                },
+              ],
+            }}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={400}
+            yAxisInterval={1} // optional, defaults to 1
+            yLabelsOffset={-3}
+            xLabelsOffset={1}
+            horizontalLabelRotation={-5}
+            verticalLabelRotation={20}
+            onDataPointClick={({ value, index }) => {
+              const message = `${dataPerwilayahPaspor[index].tahun} - ${dataPerwilayahPaspor[index].wilayah} - ${'Rp ' + numberWithCommas(value)}`;
+              console.log(message);
+              dispatch(
+                setToast({
+                  success: true,
+                  message,
+                  closeToast: () => dispatch(setToast(null)),
+                }),
+              );
+            }}
+            chartConfig = {{
+              backgroundColor: '#001233',
+              backgroundGradientFrom: '#001233',
+              backgroundGradientTo: '#001233',
+              decimalPlaces: 0, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 30,
+              },
+              propsForDots: {
+                r: '2',
+                strokeWidth: 5,
+                stroke: '#ffff3f',
+              },
+            }}
+            style={{
+              marginVertical: 8,
+              borderRadius: 10,
+              width: '100%',
+            }}
+          />
+        )}
+        {/* <Text>PNBP Paspor Perwilayah Pertahun</Text>
+        {dataPerwilayahPaspor.length > 0 && (
+          <BarChart
+            data={{
+              labels: [
+                dataPerwilayahPaspor.map((v) => v.wilayah),
+              ],
+              datasets: [{
+                  data: dataPerwilayahPaspor.map((v) => v.total),
+              }],
+            }}
+            style={graphStyle}
+            width={Dimensions.get('screen').width - 20}
+            height={220}
+            yAxisLabel=""
+            chartConfig={chartConfig}
+            verticalLabelRotation={30}
+          />
+        )} */}
       </Container>
     </>
   );
@@ -336,23 +442,6 @@ const ThridRoute = () => {
       console.warn(error);
       dispatch(setLoading(true));
     }
-  };
-
-  const chartConfig = {
-    backgroundColor: '#e26a00',
-    backgroundGradientFrom: '#fb8c00',
-    backgroundGradientTo: '#ffa726',
-    decimalPlaces: 0, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    style: {
-      borderRadius: 30,
-    },
-    propsForDots: {
-      r: '3',
-      strokeWidth: 5,
-      stroke: '#fff',
-    },
   };
 
   const GetSatker = async () => {
@@ -418,10 +507,27 @@ const ThridRoute = () => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
 
+  const chartConfig = {
+    backgroundColor: '#e26a00',
+    backgroundGradientFrom: '#fb8c00',
+    backgroundGradientTo: '#ffa726',
+    decimalPlaces: 0, // optional, defaults to 2dp
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    style: {
+      borderRadius: 30,
+    },
+    propsForDots: {
+      r: '3',
+      strokeWidth: 5,
+      stroke: '#fff',
+    },
+  };
+
   return (
     <>
       <Container>
-      <Line/>
+        <Line />
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
@@ -653,7 +759,7 @@ const FourthRoute = () => {
   return (
     <>
       <Container>
-      <Line/>
+        <Line />
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
@@ -762,6 +868,10 @@ const FourthRoute = () => {
   );
 };
 
+const graphStyle = styled.View`
+  flex: 1,
+  paddingRight: 25,
+`;
 const Line = styled.View`
   width: 100%;
   border-bottom-width: 1px;

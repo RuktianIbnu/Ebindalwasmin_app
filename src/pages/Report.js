@@ -399,7 +399,7 @@ const Text = styled.Text`
   font-weight: bold;
   margin-bottom: 8px;
 `;
-const Container = styled.View`
+const Container = styled.ScrollView`
   flex: 1;
   padding-horizontal: 16px;
   padding-vertical: 16px;

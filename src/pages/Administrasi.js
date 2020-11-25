@@ -526,7 +526,7 @@ export default function Administrasi() {
                   <ChildrenInputLabel>Total</ChildrenInputLabel>
                   <ChildrenInput
                     editable={false}
-                    value={numberWithCommas(item.total)}
+                    value={'Rp '+numberWithCommas(item.total)}
                   />
                 </ChildrenInputContainer>
               </ChildenRow>
@@ -556,6 +556,7 @@ const ChildrenInput = styled.TextInput`
   border-radius: 5px;
   width: 100%;
   padding-horizontal: 8px;
+  color: black;
 `;
 const ChildrenText = styled.Text`
   font-size: 14px;
