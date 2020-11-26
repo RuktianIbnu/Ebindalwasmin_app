@@ -39,7 +39,7 @@ export default function Administrasi() {
         headers,
       });
       dispatch(setLoading(false));
-      const { data, status } = response;
+      const {data, status} = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -86,7 +86,7 @@ export default function Administrasi() {
   const GetKategoriDataByTanggal = async () => {
     // console.log(selectedKategori, selectedTanggal);
     try {
-      if (selectedKategori === '' || selectedSatker ==='') {
+      if (selectedKategori === '' || selectedSatker === '') {
         Alert.alert(null, 'Pilih Kategori dan Satuan kerja terlebih dahulu');
       } else {
         //console.log('SELECTED KATEGORI', selectedKategori);
@@ -100,16 +100,21 @@ export default function Administrasi() {
           tanggal: moment(selectedTanggal).format('YYYY-MM-DD'),
         };
 
-        setKategoriChild([])
+        setKategoriChild([]);
         switch (selectedKategori) {
           case 'DOKUMEN PERJALANAN REPUBLIK INDONESIA':
             const responsePaspor = await Axios.post(
-              `${BASE_URL}/resources/paspor-by/`, body,
+              `${BASE_URL}/resources/paspor-by/`,
+              body,
               {headers},
             );
             // const {status, data} = responsePaspor;
             if (responsePaspor.status === 200) {
               const dataByTanggal = responsePaspor.data.data;
+
+              let peopleSum = 0;
+              let totalSum = 0;
+
               for (const iterator of kategori) {
                 // console.log(iterator.child);
                 if (
@@ -123,6 +128,9 @@ export default function Administrasi() {
                           item.laki = iterator.laki;
                           item.perempuan = iterator.perempuan;
                           item.total = iterator.total;
+
+                          peopleSum += iterator.laki + iterator.perempuan;
+                          totalSum += iterator.total;
                         }
                       }
                     } else {
@@ -130,6 +138,8 @@ export default function Administrasi() {
                       item.perempuan = 0;
                       item.total = 0;
                     }
+                    item.people = peopleSum;
+                    item.total_sum = totalSum;
                   }
                   setKategoriChild(iterator.child);
                 }
@@ -142,13 +152,15 @@ export default function Administrasi() {
           case 'IZIN KEIMIGRASIAN':
             //console.log(tanggal);
             const responseIntal = await Axios.post(
-              `${BASE_URL}/resources/intal-by/`, body,
+              `${BASE_URL}/resources/intal-by/`,
+              body,
               {headers},
             );
             // const {status, data} = responseIntal;
             if (responseIntal.status === 200) {
               const dataByTanggal = responseIntal.data.data;
-              
+              let peopleSum = 0;
+              let totalSum = 0;
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'IZIN KEIMIGRASIAN') {
                   for (const kategoriItemChild of kategoriItem.child) {
@@ -161,6 +173,10 @@ export default function Administrasi() {
                               item.laki = itemByTanggal.laki;
                               item.perempuan = itemByTanggal.perempuan;
                               item.total = itemByTanggal.total;
+
+                              peopleSum +=
+                                itemByTanggal.laki + itemByTanggal.perempuan;
+                              totalSum += itemByTanggal.total;
                             }
                           }
                         } else {
@@ -177,6 +193,10 @@ export default function Administrasi() {
                             kategoriItemChild.perempuan =
                               itemByTanggal.perempuan;
                             kategoriItemChild.total = itemByTanggal.total;
+
+                            peopleSum +=
+                              itemByTanggal.laki + itemByTanggal.perempuan;
+                            totalSum += itemByTanggal.total;
                           }
                         }
                       } else {
@@ -185,6 +205,8 @@ export default function Administrasi() {
                         kategoriItemChild.total = 0;
                       }
                     }
+                    kategoriItemChild.people = peopleSum;
+                    kategoriItemChild.total_sum = totalSum;
                   }
                   setKategoriChild(kategoriItem.child);
                 }
@@ -196,12 +218,15 @@ export default function Administrasi() {
 
           case 'VISA':
             const responseVisa = await Axios.post(
-              `${BASE_URL}/resources/visa-by/`, body,
+              `${BASE_URL}/resources/visa-by/`,
+              body,
               {headers},
             );
             // const {status, data} = responseVisa;
             if (responseVisa.status === 200) {
               const dataByTanggal = responseVisa.data.data;
+              let peopleSum = 0;
+              let totalSum = 0;
 
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'VISA') {
@@ -214,6 +239,10 @@ export default function Administrasi() {
                               item.laki = itemByTanggal.laki;
                               item.perempuan = itemByTanggal.perempuan;
                               item.total = itemByTanggal.total;
+
+                              peopleSum +=
+                                itemByTanggal.laki + itemByTanggal.perempuan;
+                              totalSum += itemByTanggal.total;
                             }
                           }
                         } else {
@@ -230,6 +259,10 @@ export default function Administrasi() {
                             kategoriItemChild.perempuan =
                               itemByTanggal.perempuan;
                             kategoriItemChild.total = itemByTanggal.total;
+
+                            peopleSum +=
+                              itemByTanggal.laki + itemByTanggal.perempuan;
+                            totalSum += itemByTanggal.total;
                           }
                         }
                       } else {
@@ -238,6 +271,8 @@ export default function Administrasi() {
                         kategoriItemChild.total = 0;
                       }
                     }
+                    kategoriItemChild.people = peopleSum;
+                    kategoriItemChild.total_sum = totalSum;
                   }
                   setKategoriChild(kategoriItem.child);
                 }
@@ -249,11 +284,15 @@ export default function Administrasi() {
 
           case 'PNBP KEIMIGRASIAN LAINNYA':
             const responsePNBP = await Axios.post(
-              `${BASE_URL}/resources/pnbp-by/`, body,
+              `${BASE_URL}/resources/pnbp-by/`,
+              body,
               {headers},
             );
             if (responsePNBP.status === 200) {
               const dataByTanggal = responsePNBP.data.data;
+              let peopleSum = 0;
+              let totalSum = 0;
+
               //console.log('DATA BY TANGG', dataByTanggal);
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'PNBP KEIMIGRASIAN LAINNYA') {
@@ -267,6 +306,10 @@ export default function Administrasi() {
                               iterator.laki = itemByTanggal.laki;
                               iterator.perempuan = itemByTanggal.perempuan;
                               iterator.total = itemByTanggal.total;
+
+                              peopleSum +=
+                                itemByTanggal.laki + itemByTanggal.perempuan;
+                              totalSum += itemByTanggal.total;
                             }
                           }
                         } else {
@@ -283,6 +326,10 @@ export default function Administrasi() {
                             kategoriItemChild.perempuan =
                               itemByTanggal.perempuan;
                             kategoriItemChild.total = itemByTanggal.total;
+
+                            peopleSum +=
+                              itemByTanggal.laki + itemByTanggal.perempuan;
+                            totalSum += itemByTanggal.total;
                           }
                         }
                       } else {
@@ -291,6 +338,8 @@ export default function Administrasi() {
                         kategoriItemChild.total = 0;
                       }
                     }
+                    kategoriItemChild.people = peopleSum;
+                    kategoriItemChild.total_sum = totalSum;
                   }
                   setKategoriChild(kategoriItem.child);
                 }
@@ -301,6 +350,7 @@ export default function Administrasi() {
             break;
         }
       }
+      console.log(kategoriChild);
     } catch (error) {
       //console.log(error);
     }
@@ -313,7 +363,7 @@ export default function Administrasi() {
   return (
     <>
       <Container>
-      <Text>Pilih Satuan Kerja</Text>
+        <Text>Pilih Satuan Kerja</Text>
         <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
@@ -367,7 +417,6 @@ export default function Administrasi() {
                 setShow(!show);
                 setSelectedTanggal(selectedDate || selectedTanggal);
               }}
-              on
             />
           )}
         </Row>
@@ -388,74 +437,22 @@ export default function Administrasi() {
                     <ChildrenInputContainer>
                       <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
                       <ChildrenInput
-                      editable={false}
-                        onChangeText={(text) => {
-                          let parent = [...item.child];
-                          parent[itemIndex] = {
-                            ...parent[itemIndex],
-                            laki: parseInt(text || 0),
-                          };
-                          let newArr = [...kategoriChild];
-                          newArr[index].child[itemIndex] = parent[itemIndex];
-                          setKategoriChild(newArr);
-                        }}
-                        onBlur={() => {
-                          let parent = [...item.child];
-                          const laki = parent[itemIndex].laki;
-                          const perempuan = parent[itemIndex].perempuan;
-                          const tarifPNBP = parent[itemIndex].tarif_pnbp;
-                          const sum = laki + perempuan;
-                          const total = sum * tarifPNBP;
-
-                          parent[itemIndex] = {
-                            ...parent[itemIndex],
-                            total,
-                          };
-                          let newArr = [...kategoriChild];
-                          newArr[index].child[itemIndex] = parent[itemIndex];
-                          setKategoriChild(newArr);
-                        }}
+                        editable={false}
                         value={itemChild.laki.toString()}
                       />
                     </ChildrenInputContainer>
                     <ChildrenInputContainer>
                       <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
                       <ChildrenInput
-                      editable={false}
-                        onChangeText={(text) => {
-                          let parent = [...item.child];
-                          parent[itemIndex] = {
-                            ...parent[itemIndex],
-                            perempuan: parseInt(text || 0),
-                          };
-                          let newArr = [...kategoriChild];
-                          newArr[index].child[itemIndex] = parent[itemIndex];
-                          setKategoriChild(newArr);
-                        }}
-                        onBlur={() => {
-                          let parent = [...item.child];
-                          const laki = parent[itemIndex].laki;
-                          const perempuan = parent[itemIndex].perempuan;
-                          const tarifPNBP = parent[itemIndex].tarif_pnbp;
-                          const sum = laki + perempuan;
-                          const total = sum * tarifPNBP;
-
-                          parent[itemIndex] = {
-                            ...parent[itemIndex],
-                            total,
-                          };
-                          let newArr = [...kategoriChild];
-                          newArr[index].child[itemIndex] = parent[itemIndex];
-                          setKategoriChild(newArr);
-                        }}
+                        editable={false}
                         value={itemChild.perempuan.toString()}
                       />
                     </ChildrenInputContainer>
                     <ChildrenInputContainer>
-                      <ChildrenInputLabel>Total</ChildrenInputLabel>
+                      <ChildrenInputLabel>Subtotal</ChildrenInputLabel>
                       <ChildrenInput
                         editable={false}
-                        value={'Rp '+numberWithCommas(itemChild.total)}
+                        value={'Rp ' + numberWithCommas(itemChild.total)}
                       />
                     </ChildrenInputContainer>
                   </ChildenRow>
@@ -466,71 +463,38 @@ export default function Administrasi() {
                 <ChildrenInputContainer>
                   <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
                   <ChildrenInput
-                  editable={false}
-                    onChangeText={(text) => {
-                      let newArr = [...kategoriChild];
-
-                      newArr[index] = {
-                        ...newArr[index],
-                        laki: parseInt(text || 0),
-                      };
-                      setKategoriChild(newArr);
-                    }}
-                    onBlur={() => {
-                      let newArr = [...kategoriChild];
-
-                      let lakiValue = parseInt(newArr[index].laki);
-                      let perempuanValue = parseInt(newArr[index].perempuan);
-                      let tarifPNBP = parseInt(newArr[index].tarif_pnbp);
-                      const totalSum = lakiValue + perempuanValue;
-                      const total = totalSum * tarifPNBP;
-                      newArr[index] = {
-                        ...newArr[index],
-                        total,
-                      };
-                      setKategoriChild(newArr);
-                    }}
+                    editable={false}
                     value={item.laki.toString()}
                   />
                 </ChildrenInputContainer>
                 <ChildrenInputContainer>
                   <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
                   <ChildrenInput
-                  editable={false}
-                    onChangeText={(text) => {
-                      let newArr = [...kategoriChild];
-                      newArr[index] = {
-                        ...newArr[index],
-                        perempuan: parseInt(text || 0),
-                      };
-                      setKategoriChild(newArr);
-                    }}
-                    onBlur={() => {
-                      let newArr = [...kategoriChild];
-
-                      let lakiValue = parseInt(newArr[index].laki);
-                      let perempuanValue = parseInt(newArr[index].perempuan);
-                      let tarifPNBP = parseInt(newArr[index].tarif_pnbp);
-                      const totalSum = lakiValue + perempuanValue;
-                      const total = totalSum * tarifPNBP;
-                      newArr[index] = {
-                        ...newArr[index],
-                        total,
-                      };
-                      setKategoriChild(newArr);
-                    }}
+                    editable={false}
                     value={item.perempuan.toString()}
                   />
                 </ChildrenInputContainer>
                 <ChildrenInputContainer>
-                  <ChildrenInputLabel>Total</ChildrenInputLabel>
+                  <ChildrenInputLabel>Subtotal</ChildrenInputLabel>
                   <ChildrenInput
                     editable={false}
-                    value={'Rp '+numberWithCommas(item.total)}
+                    value={'Rp ' + numberWithCommas(item.total)}
                   />
                 </ChildrenInputContainer>
               </ChildenRow>
             )}
+            <Footer>
+              <FooterContainer>
+                <FooterTextPeople>Total Pemohon</FooterTextPeople>
+                <FooterTextPeople>{item.people || 0}</FooterTextPeople>
+              </FooterContainer>
+              <FooterContainer>
+                <FooterTextTotal>Total</FooterTextTotal>
+                <FooterTextTotal>
+                  Rp. {numberWithCommas(item.total_sum || 0)}
+                </FooterTextTotal>
+              </FooterContainer>
+            </Footer>
           </Category>
         ))}
       </Container>
@@ -538,6 +502,15 @@ export default function Administrasi() {
   );
 }
 
+const FooterContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+`;
+const FooterTextTotal = styled.Text``;
+const FooterTextPeople = styled.Text``;
+const Footer = styled.View`
+  margin-top: 10px;
+`;
 const ChildrenInputContainer = styled.View`
   width: 30%;
 `;
