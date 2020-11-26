@@ -1,13 +1,13 @@
 import styled from 'styled-components/native';
-import { View, Dimensions, StatusBar, Text, ToastAndroid } from 'react-native';
-import { TabView, SceneMap } from 'react-native-tab-view';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import {View, Dimensions, StatusBar, Text, ToastAndroid} from 'react-native';
+import {TabView, SceneMap} from 'react-native-tab-view';
+import {Provider, useSelector, useDispatch} from 'react-redux';
 import Axios from 'axios';
-import { BASE_URL } from '../helpers/global';
-import React, { useRef, useState, useEffect } from 'react';
+import {BASE_URL} from '../helpers/global';
+import React, {useRef, useState, useEffect} from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
-import { Alert } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+import {Alert} from 'react-native';
 import {
   LineChart,
   BarChart,
@@ -16,21 +16,21 @@ import {
   ContributionGraph,
   StackedBarChart,
 } from 'react-native-chart-kit';
-import { ScrollView } from 'react-native-gesture-handler';
-import FlashMessage, { showMessage } from 'react-native-flash-message';
-import { setLoading, setToast } from '../store/actionCreator';
+import {ScrollView} from 'react-native-gesture-handler';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {setLoading, setToast} from '../store/actionCreator';
 
-const initialLayout = { width: Dimensions.get('window').width };
+const initialLayout = {width: Dimensions.get('window').width};
 
-export default function Home({ navigation }) {
+export default function Home({navigation}) {
   const [index, setIndex] = useState(0);
 
   const [routes] = useState([
     // { key: 'all', title: 'Seluruh PNBP' },
-    { key: 'first', title: 'Paspor' },
+    {key: 'first', title: 'Paspor'},
     // { key: 'second', title: 'Visa' },
-    { key: 'thrid', title: 'Izin Tinggal' },
-    { key: 'fourth', title: 'PNBP Lainnya' },
+    {key: 'thrid', title: 'Izin Tinggal'},
+    {key: 'fourth', title: 'PNBP Lainnya'},
   ]);
 
   const renderScene = SceneMap({
@@ -45,8 +45,8 @@ export default function Home({ navigation }) {
     <>
       <StatusBar backgroundColor="#4361ee" barStyle="light-content" />
       <TabView
-        labelStyle={{ fontSize: 1 }}
-        navigationState={{ index, routes }}
+        labelStyle={{fontSize: 1}}
+        navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={initialLayout}
@@ -63,8 +63,8 @@ const AllRoute = () => {
         <Text>PNBP Paspor</Text>
       </Container>
     </>
-  )
-}
+  );
+};
 
 const FirstRoute = () => {
   const accessToken = useSelector((state) => state.accessToken);
@@ -115,7 +115,7 @@ const FirstRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPerwilayahPaspor(data.data);
         //data.dat)
@@ -123,7 +123,9 @@ const FirstRoute = () => {
       } else {
         dispatch(setLoading(false));
       }
-    } catch (error) { dispatch(setLoading(false)); }
+    } catch (error) {
+      dispatch(setLoading(false));
+    }
   };
 
   const GetSatker = async () => {
@@ -136,7 +138,7 @@ const FirstRoute = () => {
         headers,
       });
 
-      const { data, status } = response;
+      const {data, status} = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -146,7 +148,7 @@ const FirstRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getdataPnbpPaspor = async () => {
@@ -169,14 +171,16 @@ const FirstRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPnbpPaspor(data.data);
         dispatch(setLoading(false));
       } else {
         dispatch(setLoading(false));
       }
-    } catch (error) { dispatch(setLoading(false)); }
+    } catch (error) {
+      dispatch(setLoading(false));
+    }
   };
 
   const getPemohonPaspor = async () => {
@@ -193,7 +197,7 @@ const FirstRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setPemohonPaspor(data.data);
         dispatch(setLoading(false));
@@ -519,7 +523,7 @@ const ThridRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setPemohonIntal(data.data);
         dispatch(setLoading(false));
@@ -542,7 +546,7 @@ const ThridRoute = () => {
         headers,
       });
 
-      const { data, status } = response;
+      const {data, status} = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -552,7 +556,7 @@ const ThridRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getdataPnbpIntal = async () => {
@@ -575,7 +579,7 @@ const ThridRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
 
       if (status === 200) {
         setDataPnbpIntal(data.data);
@@ -920,7 +924,7 @@ const FourthRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setPemohonPNBP(data.data);
         dispatch(setLoading(false));
@@ -943,7 +947,7 @@ const FourthRoute = () => {
         headers,
       });
 
-      const { data, status } = response;
+      const {data, status} = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -953,7 +957,7 @@ const FourthRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getdataPnbpPnbp = async () => {
@@ -976,7 +980,7 @@ const FourthRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPnbpPnbp(data.data);
         dispatch(setLoading(false));
