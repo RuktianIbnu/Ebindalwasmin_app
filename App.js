@@ -131,7 +131,7 @@ const Nav = () => {
               <Stack.Screen
                 name="index"
                 component={TabNav}
-                options={{headerTitle:"E-Bindalwasmin"}}
+                options={{headerTitle:"SIKOK"}}
               />
             )}
         </Stack.Navigator>
