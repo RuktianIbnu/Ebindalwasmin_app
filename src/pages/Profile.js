@@ -21,7 +21,6 @@ export default function Profile() {
         <Name>{DataUser.name}</Name>
         <Email>{DataUser.email}</Email>
         <Kantor>{DataUser.nama_kantor}</Kantor>
-        <Kantor>{DataUser.id_kantor}</Kantor>
         <Button onPress={Logout}>
           <ButtonText>Keluar</ButtonText>
         </Button>

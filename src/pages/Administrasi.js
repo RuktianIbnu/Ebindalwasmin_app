@@ -1,13 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {Picker} from '@react-native-picker/picker';
-import {useSelector, useDispatch} from 'react-redux';
+import { Picker } from '@react-native-picker/picker';
+import { useSelector, useDispatch } from 'react-redux';
 import Axios from 'axios';
-import {BASE_URL} from '../helpers/global';
+import { BASE_URL } from '../helpers/global';
 import moment from 'moment';
-import {Alert} from 'react-native';
-import {setLoading} from '../store/actionCreator';
+import { Alert } from 'react-native';
+import { setLoading } from '../store/actionCreator';
 
 export default function Administrasi() {
   const [show, setShow] = useState(false);
@@ -39,7 +39,7 @@ export default function Administrasi() {
         headers,
       });
       dispatch(setLoading(false));
-      const {data, status} = response;
+      const { data, status } = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -66,7 +66,7 @@ export default function Administrasi() {
         headers,
       });
       dispatch(setLoading(false));
-      const {data, status} = response;
+      const { data, status } = response;
       if (status === 200) {
         const kategori = data.data;
         const kategoriArr = [];
@@ -106,7 +106,7 @@ export default function Administrasi() {
             const responsePaspor = await Axios.post(
               `${BASE_URL}/resources/paspor-by/`,
               body,
-              {headers},
+              { headers },
             );
             // const {status, data} = responsePaspor;
             if (responsePaspor.status === 200) {
@@ -153,7 +153,7 @@ export default function Administrasi() {
             const responseIntal = await Axios.post(
               `${BASE_URL}/resources/intal-by/`,
               body,
-              {headers},
+              { headers },
             );
             // const {status, data} = responseIntal;
             if (responseIntal.status === 200) {
@@ -216,77 +216,78 @@ export default function Administrasi() {
             }
             break;
 
-          // case 'VISA':
-          //   const responseVisa = await Axios.post(
-          //     `${BASE_URL}/resources/visa-by/`,
-          //     body,
-          //     {headers},
-          //   );
-          //   // const {status, data} = responseVisa;
-          //   if (responseVisa.status === 200) {
-          //     const dataByTanggal = responseVisa.data.data;
+          case 'VISA':
+            // const responseVisa = await Axios.post(
+            //   `${BASE_URL}/resources/visa-by/`,
+            //   body,
+            //   {headers},
+            // );
+            // const {status, data} = responseVisa;
+            // if (responseVisa.status === 200) {
+            //   const dataByTanggal = responseVisa.data.data;
 
-          //     for (const kategoriItem of kategori) {
-          //       if (kategoriItem.nama_layanan === 'VISA') {
-          //         for (const kategoriItemChild of kategoriItem.child) {
-          //           let peopleSum = 0;
-          //           let totalSum = 0;
-          //           if (kategoriItemChild.child.length !== 0) {
-          //             for (const item of kategoriItemChild.child) {
-          //               if (dataByTanggal.length !== 0) {
-          //                 for (const itemByTanggal of dataByTanggal) {
-          //                   if (itemByTanggal.id_jenis === item.id) {
-          //                     item.laki = itemByTanggal.laki;
-          //                     item.perempuan = itemByTanggal.perempuan;
-          //                     item.total = itemByTanggal.total;
+            //   for (const kategoriItem of kategori) {
+            //     if (kategoriItem.nama_layanan === 'VISA') {
+            //       for (const kategoriItemChild of kategoriItem.child) {
+            //         let peopleSum = 0;
+            //         let totalSum = 0;
+            //         if (kategoriItemChild.child.length !== 0) {
+            //           for (const item of kategoriItemChild.child) {
+            //             if (dataByTanggal.length !== 0) {
+            //               for (const itemByTanggal of dataByTanggal) {
+            //                 if (itemByTanggal.id_jenis === item.id) {
+            //                   item.laki = itemByTanggal.laki;
+            //                   item.perempuan = itemByTanggal.perempuan;
+            //                   item.total = itemByTanggal.total;
 
-          //                     peopleSum +=
-          //                       itemByTanggal.laki + itemByTanggal.perempuan;
-          //                     totalSum += itemByTanggal.total;
-          //                   }
-          //                 }
-          //               } else {
-          //                 item.laki = 0;
-          //                 item.perempuan = 0;
-          //                 item.total = 0;
-          //               }
-          //             }
-          //           } else {
-          //             if (dataByTanggal.length !== 0) {
-          //               for (const itemByTanggal of dataByTanggal) {
-          //                 if (itemByTanggal.id_jenis === kategoriItemChild.id) {
-          //                   kategoriItemChild.laki = itemByTanggal.laki;
-          //                   kategoriItemChild.perempuan =
-          //                     itemByTanggal.perempuan;
-          //                   kategoriItemChild.total = itemByTanggal.total;
+            //                   peopleSum +=
+            //                     itemByTanggal.laki + itemByTanggal.perempuan;
+            //                   totalSum += itemByTanggal.total;
+            //                 }
+            //               }
+            //             } else {
+            //               item.laki = 0;
+            //               item.perempuan = 0;
+            //               item.total = 0;
+            //             }
+            //           }
+            //         } else {
+            //           if (dataByTanggal.length !== 0) {
+            //             for (const itemByTanggal of dataByTanggal) {
+            //               if (itemByTanggal.id_jenis === kategoriItemChild.id) {
+            //                 kategoriItemChild.laki = itemByTanggal.laki;
+            //                 kategoriItemChild.perempuan =
+            //                   itemByTanggal.perempuan;
+            //                 kategoriItemChild.total = itemByTanggal.total;
 
-          //                   peopleSum +=
-          //                     itemByTanggal.laki + itemByTanggal.perempuan;
-          //                   totalSum += itemByTanggal.total;
-          //                 }
-          //               }
-          //             } else {
-          //               kategoriItemChild.laki = 0;
-          //               kategoriItemChild.perempuan = 0;
-          //               kategoriItemChild.total = 0;
-          //             }
-          //           }
-          //           kategoriItemChild.people = peopleSum;
-          //           kategoriItemChild.total_sum = totalSum;
-          //         }
-          //         setKategoriChild(kategoriItem.child);
-          //       }
-          //     }
+            //                 peopleSum +=
+            //                   itemByTanggal.laki + itemByTanggal.perempuan;
+            //                 totalSum += itemByTanggal.total;
+            //               }
+            //             }
+            //           } else {
+            //             kategoriItemChild.laki = 0;
+            //             kategoriItemChild.perempuan = 0;
+            //             kategoriItemChild.total = 0;
+            //           }
+            //         }
+            //         kategoriItemChild.people = peopleSum;
+            //         kategoriItemChild.total_sum = totalSum;
+            //       }
+            //       setKategoriChild(kategoriItem.child);
+            //     }
+            //   }
 
-          //     dispatch(setLoading(false));
-          //   }
-          //   break;
+            //   dispatch(setLoading(false));
+            // }
+            dispatch(setLoading(false));
+            break;
 
           case 'PNBP KEIMIGRASIAN LAINNYA':
             const responsePNBP = await Axios.post(
               `${BASE_URL}/resources/pnbp-by/`,
               body,
-              {headers},
+              { headers },
             );
             if (responsePNBP.status === 200) {
               const dataByTanggal = responsePNBP.data.data;
@@ -350,7 +351,7 @@ export default function Administrasi() {
             break;
         }
       }
-      console.log(kategoriChild);
+      // console.log(kategoriChild);
     } catch (error) {
       //console.log(error);
     }
@@ -459,30 +460,30 @@ export default function Administrasi() {
                 </ChildrenContainer>
               ))
             ) : (
-              <ChildenRow>
-                <ChildrenInputContainer>
-                  <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
-                  <ChildrenInput
-                    editable={false}
-                    value={item.laki.toString()}
-                  />
-                </ChildrenInputContainer>
-                <ChildrenInputContainer>
-                  <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
-                  <ChildrenInput
-                    editable={false}
-                    value={item.perempuan.toString()}
-                  />
-                </ChildrenInputContainer>
-                <ChildrenInputContainer>
-                  <ChildrenInputLabel>Subtotal</ChildrenInputLabel>
-                  <ChildrenInput
-                    editable={false}
-                    value={'Rp ' + numberWithCommas(item.total)}
-                  />
-                </ChildrenInputContainer>
-              </ChildenRow>
-            )}
+                <ChildenRow>
+                  <ChildrenInputContainer>
+                    <ChildrenInputLabel>Jumlah Pria</ChildrenInputLabel>
+                    <ChildrenInput
+                      editable={false}
+                      value={item.laki.toString()}
+                    />
+                  </ChildrenInputContainer>
+                  <ChildrenInputContainer>
+                    <ChildrenInputLabel>Jumlah Wanita</ChildrenInputLabel>
+                    <ChildrenInput
+                      editable={false}
+                      value={item.perempuan.toString()}
+                    />
+                  </ChildrenInputContainer>
+                  <ChildrenInputContainer>
+                    <ChildrenInputLabel>Subtotal</ChildrenInputLabel>
+                    <ChildrenInput
+                      editable={false}
+                      value={'Rp ' + numberWithCommas(item.total)}
+                    />
+                  </ChildrenInputContainer>
+                </ChildenRow>
+              )}
             <Footer>
               <FooterContainer>
                 <FooterTextPeople>Total Pemohon</FooterTextPeople>
