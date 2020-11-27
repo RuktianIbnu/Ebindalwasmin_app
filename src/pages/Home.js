@@ -1,13 +1,13 @@
 import styled from 'styled-components/native';
-import { View, Dimensions, StatusBar, Text, ToastAndroid } from 'react-native';
-import { TabView, SceneMap } from 'react-native-tab-view';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import {View, Dimensions, StatusBar, Text, ToastAndroid} from 'react-native';
+import {TabView, SceneMap} from 'react-native-tab-view';
+import {Provider, useSelector, useDispatch} from 'react-redux';
 import Axios from 'axios';
-import { BASE_URL } from '../helpers/global';
-import React, { useRef, useState, useEffect } from 'react';
+import {BASE_URL} from '../helpers/global';
+import React, {useRef, useState, useEffect} from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
-import { Alert } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+import {Alert} from 'react-native';
 import {
   LineChart,
   BarChart,
@@ -16,21 +16,21 @@ import {
   ContributionGraph,
   StackedBarChart,
 } from 'react-native-chart-kit';
-import { ScrollView } from 'react-native-gesture-handler';
-import FlashMessage, { showMessage } from 'react-native-flash-message';
-import { setLoading, setToast } from '../store/actionCreator';
+import {ScrollView} from 'react-native-gesture-handler';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {setLoading, setToast} from '../store/actionCreator';
 
-const initialLayout = { width: Dimensions.get('window').width };
+const initialLayout = {width: Dimensions.get('window').width};
 
 export default function Home() {
   const [index, setIndex] = useState(0);
 
   const [routes] = useState([
     // { key: 'all', title: 'Seluruh PNBP' },
-    { key: 'first', title: 'Paspor' },
+    {key: 'first', title: 'Paspor'},
     // { key: 'second', title: 'Visa' },
-    { key: 'thrid', title: 'Izin Tinggal' },
-    { key: 'fourth', title: 'PNBP Lainnya' },
+    {key: 'thrid', title: 'Izin Tinggal'},
+    {key: 'fourth', title: 'PNBP Lainnya'},
   ]);
 
   const renderScene = SceneMap({
@@ -45,8 +45,8 @@ export default function Home() {
     <>
       <StatusBar backgroundColor="#4361ee" barStyle="light-content" />
       <TabView
-        labelStyle={{ fontSize: 1 }}
-        navigationState={{ index, routes }}
+        labelStyle={{fontSize: 1}}
+        navigationState={{index, routes}}
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={initialLayout}
@@ -74,16 +74,16 @@ const FirstRoute = () => {
   const [satkerDropdown, setSatkerDropdown] = useState([]);
   const [selectedSatker, setSelectedSatker] = useState(DataUser.id_kantor);
   const [dataPerwilayahPaspor, setDataPerwilayahPaspor] = useState([]);
-  const [selectedTahun, setSelectedTahun] = useState([]);
+  const [selectedTahun, setSelectedTahun] = useState(new Date().getFullYear());
   const [tahunDropdown, setTahunDropdown] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const year = new Date().getFullYear();
-    const yearArr = []
+    const yearArr = [];
     for (let index = 0; index < 10; index++) {
-      const prevYear = year - index
-      yearArr.push(prevYear)
+      const prevYear = year - index;
+      yearArr.push(prevYear);
     }
     //year)
     setTahunDropdown(yearArr);
@@ -92,10 +92,9 @@ const FirstRoute = () => {
     getdataPnbpPaspor();
     getPivotPerwilayah();
     GetSatker();
-
   }, [selectedSatker, selectedTahun]);
 
-  console.log(selectedSatker)
+  // console.log(selectedSatker);
 
   const getPivotPerwilayah = async () => {
     try {
@@ -118,7 +117,7 @@ const FirstRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPerwilayahPaspor(data.data);
         //data.dat)
@@ -141,7 +140,7 @@ const FirstRoute = () => {
         headers,
       });
 
-      const { data, status } = response;
+      const {data, status} = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -151,7 +150,7 @@ const FirstRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getdataPnbpPaspor = async () => {
@@ -174,7 +173,7 @@ const FirstRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPnbpPaspor(data.data);
         dispatch(setLoading(false));
@@ -200,7 +199,7 @@ const FirstRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setPemohonPaspor(data.data);
         dispatch(setLoading(false));
@@ -238,7 +237,7 @@ const FirstRoute = () => {
     <>
       <Container>
         <Line />
-        {DataUser.id_kantor == 99 ? (
+        {DataUser.id_kantor === 99 ? (
           <PickerContainer>
             <Picker
               selectedValue={selectedSatker}
@@ -256,8 +255,8 @@ const FirstRoute = () => {
             </Picker>
           </PickerContainer>
         ) : (
-            <Text>{DataUser.nama_kantor}</Text>
-          )}
+          <Text>{DataUser.nama_kantor}</Text>
+        )}
 
         <Text>PNBP Paspor</Text>
         {dataPnbpPaspor.length > 0 ? (
@@ -277,9 +276,10 @@ const FirstRoute = () => {
             xLabelsOffset={8}
             horizontalLabelRotation={-10}
             verticalLabelRotation={-10}
-            onDataPointClick={({ value, index }) => {
-              const message = `${dataPnbpPaspor[index].periode
-                } - ${'Rp ' + numberWithCommas(value)}`;
+            onDataPointClick={({value, index}) => {
+              const message = `${dataPnbpPaspor[index].periode} - ${
+                'Rp ' + numberWithCommas(value)
+              }`;
               //message)
               dispatch(
                 setToast({
@@ -298,43 +298,57 @@ const FirstRoute = () => {
             }}
           />
         ) : (
-            <LineChart
-              data={{
-                labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des",],
-                datasets: [
-                  {
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  },
-                ],
-              }}
-              width={Dimensions.get('screen').width - 20} // from react-native
-              height={250}
-              yAxisInterval={1} // optional, defaults to 1
-              yLabelsOffset={-4}
-              xLabelsOffset={8}
-              horizontalLabelRotation={-10}
-              verticalLabelRotation={-10}
-              onDataPointClick={({ value, index }) => {
-                const message = `${dataPnbpPaspor[index].periode
-                  } - ${'Rp ' + numberWithCommas(value)}`;
-                //message)
-                dispatch(
-                  setToast({
-                    success: true,
-                    message,
-                    closeToast: () => dispatch(setToast(null)),
-                  }),
-                );
-              }}
-              chartConfig={chartConfig}
-              bezier
-              style={{
-                marginVertical: 8,
-                borderRadius: 10,
-                width: '100%',
-              }}
-            />
-          )}
+          <LineChart
+            data={{
+              labels: [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des',
+              ],
+              datasets: [
+                {
+                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                },
+              ],
+            }}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={250}
+            yAxisInterval={1} // optional, defaults to 1
+            yLabelsOffset={-4}
+            xLabelsOffset={8}
+            horizontalLabelRotation={-10}
+            verticalLabelRotation={-10}
+            onDataPointClick={({value, index}) => {
+              const message = `${dataPnbpPaspor[index].periode} - ${
+                'Rp ' + numberWithCommas(value)
+              }`;
+              //message)
+              dispatch(
+                setToast({
+                  success: true,
+                  message,
+                  closeToast: () => dispatch(setToast(null)),
+                }),
+              );
+            }}
+            chartConfig={chartConfig}
+            bezier
+            style={{
+              marginVertical: 8,
+              borderRadius: 10,
+              width: '100%',
+            }}
+          />
+        )}
         <Line />
         <Text>Permohonan Paspor 10 Hari Terkahir</Text>
         {pemohonPaspor.length > 0 ? (
@@ -374,42 +388,42 @@ const FirstRoute = () => {
             }}
           />
         ) : (
-            <PieChart
-              data={[
-                {
-                  name: 'LAKI - LAKI',
-                  population: 0,
-                  color: '#d00000',
-                  legendFontColor: '#000000',
-                  legendFontSize: 13,
-                },
-                {
-                  name: 'PEREMPUAN',
-                  population: 0,
-                  color: '#4ea8de',
-                  legendFontColor: '#000000',
-                  legendFontSize: 13,
-                },
-              ]}
-              width={Dimensions.get('screen').width - 20} // from react-native
-              height={220}
-              chartConfig={{
-                color: (opacity = 1) => `white`,
-                labelColor: (opacity = 1) => `white`,
-                style: {
-                  borderRadius: 16,
-                },
-              }}
-              backgroundColor="#f1faee"
-              accessor="population"
-              paddingLeft="15"
-              absolute
-              style={{
-                marginVertical: 8,
+          <PieChart
+            data={[
+              {
+                name: 'LAKI - LAKI',
+                population: 0,
+                color: '#d00000',
+                legendFontColor: '#000000',
+                legendFontSize: 13,
+              },
+              {
+                name: 'PEREMPUAN',
+                population: 0,
+                color: '#4ea8de',
+                legendFontColor: '#000000',
+                legendFontSize: 13,
+              },
+            ]}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={220}
+            chartConfig={{
+              color: (opacity = 1) => `white`,
+              labelColor: (opacity = 1) => `white`,
+              style: {
                 borderRadius: 16,
-              }}
-            />
-          )}
+              },
+            }}
+            backgroundColor="#f1faee"
+            accessor="population"
+            paddingLeft="15"
+            absolute
+            style={{
+              marginVertical: 8,
+              borderRadius: 16,
+            }}
+          />
+        )}
         <Line />
         <Text>{`PNBP Paspor Perwilayah Pertahun ` + selectedTahun}</Text>
         <PickerTahunContainer>
@@ -439,8 +453,10 @@ const FirstRoute = () => {
               xLabelsOffset={1}
               horizontalLabelRotation={-5}
               verticalLabelRotation={20}
-              onDataPointClick={({ value, index }) => {
-                const message = `${dataPerwilayahPaspor[index].tahun} - ${dataPerwilayahPaspor[index].wilayah} - ${'Rp ' + numberWithCommas(value)}`;
+              onDataPointClick={({value, index}) => {
+                const message = `${dataPerwilayahPaspor[index].tahun} - ${
+                  dataPerwilayahPaspor[index].wilayah
+                } - ${'Rp ' + numberWithCommas(value)}`;
                 //console.log(message);
                 dispatch(
                   setToast({
@@ -474,46 +490,53 @@ const FirstRoute = () => {
             />
           </>
         ) : (
-            <LineChart
-              data={{
-                labels: ["Kabupaten Bangka", "Kabupaten Bangka Barat", "Kabupaten Bangka Selatan", "Kabupaten Belitung",
-                  "Kabupaten Belitung Timur", "Kota Pangkalpinang", "lainnya"],
-                datasets: [
-                  {
-                    data: [0, 0, 0, 0, 0, 0, 0],
-                  },
-                ],
-              }}
-              width={Dimensions.get('screen').width - 20} // from react-native
-              height={400}
-              yAxisInterval={1} // optional, defaults to 1
-              yLabelsOffset={20}
-              xLabelsOffset={-1}
-              horizontalLabelRotation={-5}
-              verticalLabelRotation={20}
-              chartConfig={{
-                backgroundColor: '#001233',
-                backgroundGradientFrom: '#001233',
-                backgroundGradientTo: '#001233',
-                decimalPlaces: 0, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                  borderRadius: 30,
+          <LineChart
+            data={{
+              labels: [
+                'Kabupaten Bangka',
+                'Kabupaten Bangka Barat',
+                'Kabupaten Bangka Selatan',
+                'Kabupaten Belitung',
+                'Kabupaten Belitung Timur',
+                'Kota Pangkalpinang',
+                'lainnya',
+              ],
+              datasets: [
+                {
+                  data: [0, 0, 0, 0, 0, 0, 0],
                 },
-                propsForDots: {
-                  r: '2',
-                  strokeWidth: 5,
-                  stroke: '#ffff3f',
-                },
-              }}
-              style={{
-                marginVertical: 8,
-                borderRadius: 10,
-                width: '100%',
-              }}
-            />
-          )}
+              ],
+            }}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={400}
+            yAxisInterval={1} // optional, defaults to 1
+            yLabelsOffset={20}
+            xLabelsOffset={-1}
+            horizontalLabelRotation={-5}
+            verticalLabelRotation={20}
+            chartConfig={{
+              backgroundColor: '#001233',
+              backgroundGradientFrom: '#001233',
+              backgroundGradientTo: '#001233',
+              decimalPlaces: 0, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 30,
+              },
+              propsForDots: {
+                r: '2',
+                strokeWidth: 5,
+                stroke: '#ffff3f',
+              },
+            }}
+            style={{
+              marginVertical: 8,
+              borderRadius: 10,
+              width: '100%',
+            }}
+          />
+        )}
       </Container>
     </>
   );
@@ -537,19 +560,18 @@ const ThridRoute = () => {
   const [selectedSatker, setSelectedSatker] = useState(DataUser.id_kantor);
   const [pemohonIntal, setPemohonIntal] = useState([]);
   const [dataPerwilayahIntal, setDataPerwilayahIntal] = useState([]);
-  const [selectedTahun, setSelectedTahun] = useState([]);
+  const [selectedTahun, setSelectedTahun] = useState(new Date().getFullYear());
   const [tahunDropdown, setTahunDropdown] = useState([]);
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     const year = new Date().getFullYear();
-    const yearArr = []
+    const yearArr = [];
     for (let index = 0; index < 5; index++) {
-      const prevYear = year - index
-      yearArr.push(prevYear)
+      const prevYear = year - index;
+      yearArr.push(prevYear);
     }
-    setTahunDropdown(yearArr)
+    setTahunDropdown(yearArr);
 
     getdataPnbpIntal();
     GetSatker();
@@ -578,7 +600,7 @@ const ThridRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPerwilayahIntal(data.data);
         //console.log(data.data)
@@ -586,7 +608,9 @@ const ThridRoute = () => {
       } else {
         dispatch(setLoading(false));
       }
-    } catch (error) { dispatch(setLoading(false)); }
+    } catch (error) {
+      dispatch(setLoading(false));
+    }
   };
 
   const getPemohonIntal = async () => {
@@ -603,7 +627,7 @@ const ThridRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setPemohonIntal(data.data);
         dispatch(setLoading(false));
@@ -626,7 +650,7 @@ const ThridRoute = () => {
         headers,
       });
 
-      const { data, status } = response;
+      const {data, status} = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -636,7 +660,7 @@ const ThridRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getdataPnbpIntal = async () => {
@@ -659,7 +683,7 @@ const ThridRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
 
       if (status === 200) {
         setDataPnbpIntal(data.data);
@@ -700,13 +724,11 @@ const ThridRoute = () => {
     <>
       <Container>
         <Line />
-        {DataUser.id_kantor == 99 ? (
+        {DataUser.id_kantor === 99 ? (
           <PickerContainer>
             <Picker
               selectedValue={selectedSatker}
-              onValueChange={(itemValue, _) =>
-                setSelectedSatker(itemValue)
-              }>
+              onValueChange={(itemValue, _) => setSelectedSatker(itemValue)}>
               <Picker.Item value={99} label="SEMUA SATUAN KERJA" />
               {satkerDropdown.map((item, index) => (
                 <Picker.Item
@@ -718,7 +740,7 @@ const ThridRoute = () => {
             </Picker>
           </PickerContainer>
         ) : (
-            <Text>{DataUser.nama_kantor}</Text>
+          <Text>{DataUser.nama_kantor}</Text>
         )}
 
         <Text>PNBP Izin Tinggal</Text>
@@ -739,9 +761,10 @@ const ThridRoute = () => {
             xLabelsOffset={1}
             horizontalLabelRotation={-5}
             verticalLabelRotation={20}
-            onDataPointClick={({ value, index }) => {
-              const message = `${dataPnbpIntal[index].periode
-                } - ${numberWithCommas(value)}`;
+            onDataPointClick={({value, index}) => {
+              const message = `${
+                dataPnbpIntal[index].periode
+              } - ${numberWithCommas(value)}`;
               //console.log(message);
               dispatch(
                 setToast({
@@ -760,32 +783,44 @@ const ThridRoute = () => {
             }}
           />
         ) : (
-            <LineChart
-              data={{
-                labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"],
-                datasets: [
-                  {
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  },
-                ],
-              }}
-              width={Dimensions.get('screen').width - 20} // from react-native
-              height={250}
-              yAxisInterval={1} // optional, defaults to 1
-              yLabelsOffset={20}
-              xLabelsOffset={8}
-              horizontalLabelRotation={-10}
-              verticalLabelRotation={-10}
-
-              chartConfig={chartConfig}
-              bezier
-              style={{
-                marginVertical: 8,
-                borderRadius: 10,
-                width: '100%',
-              }}
-            />
-          )}
+          <LineChart
+            data={{
+              labels: [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des',
+              ],
+              datasets: [
+                {
+                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                },
+              ],
+            }}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={250}
+            yAxisInterval={1} // optional, defaults to 1
+            yLabelsOffset={20}
+            xLabelsOffset={8}
+            horizontalLabelRotation={-10}
+            verticalLabelRotation={-10}
+            chartConfig={chartConfig}
+            bezier
+            style={{
+              marginVertical: 8,
+              borderRadius: 10,
+              width: '100%',
+            }}
+          />
+        )}
         <Line />
         <Text>Permohonan Izin Tinggal 10 Hari Terkahir</Text>
         {pemohonIntal.length > 0 ? (
@@ -794,7 +829,7 @@ const ThridRoute = () => {
               {
                 name: 'LAKI - LAKI',
                 population: pemohonIntal[0].laki,
-                color: '#d00000',//
+                color: '#d00000', //
                 legendFontColor: '#000',
                 legendFontSize: 13,
               },
@@ -830,7 +865,7 @@ const ThridRoute = () => {
               {
                 name: 'LAKI - LAKI',
                 population: 0,
-                color: '#d00000',//
+                color: '#d00000', //
                 legendFontColor: '#000',
                 legendFontSize: 13,
               },
@@ -890,8 +925,10 @@ const ThridRoute = () => {
               xLabelsOffset={1}
               horizontalLabelRotation={-5}
               verticalLabelRotation={20}
-              onDataPointClick={({ value, index }) => {
-                const message = `${dataPerwilayahIntal[index].tahun} - ${dataPerwilayahIntal[index].wilayah} - ${'Rp ' + numberWithCommas(value)}`;
+              onDataPointClick={({value, index}) => {
+                const message = `${dataPerwilayahIntal[index].tahun} - ${
+                  dataPerwilayahIntal[index].wilayah
+                } - ${'Rp ' + numberWithCommas(value)}`;
                 //console.log(message);
                 dispatch(
                   setToast({
@@ -925,46 +962,53 @@ const ThridRoute = () => {
             />
           </>
         ) : (
-            <LineChart
-              data={{
-                labels: ["Kabupaten Bangka", "Kabupaten Bangka Barat", "Kabupaten Bangka Selatan", "Kabupaten Belitung",
-                  "Kabupaten Belitung Timur", "Kota Pangkalpinang", "lainnya"],
-                datasets: [
-                  {
-                    data: [0, 0, 0, 0, 0, 0, 0],
-                  },
-                ],
-              }}
-              width={Dimensions.get('screen').width - 20} // from react-native
-              height={400}
-              yAxisInterval={1} // optional, defaults to 1
-              yLabelsOffset={20}
-              xLabelsOffset={-1}
-              horizontalLabelRotation={-5}
-              verticalLabelRotation={20}
-              chartConfig={{
-                backgroundColor: '#001233',
-                backgroundGradientFrom: '#001233',
-                backgroundGradientTo: '#001233',
-                decimalPlaces: 0, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                  borderRadius: 30,
+          <LineChart
+            data={{
+              labels: [
+                'Kabupaten Bangka',
+                'Kabupaten Bangka Barat',
+                'Kabupaten Bangka Selatan',
+                'Kabupaten Belitung',
+                'Kabupaten Belitung Timur',
+                'Kota Pangkalpinang',
+                'lainnya',
+              ],
+              datasets: [
+                {
+                  data: [0, 0, 0, 0, 0, 0, 0],
                 },
-                propsForDots: {
-                  r: '2',
-                  strokeWidth: 5,
-                  stroke: '#ffff3f',
-                },
-              }}
-              style={{
-                marginVertical: 8,
-                borderRadius: 10,
-                width: '100%',
-              }}
-            />
-          )}
+              ],
+            }}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={400}
+            yAxisInterval={1} // optional, defaults to 1
+            yLabelsOffset={20}
+            xLabelsOffset={-1}
+            horizontalLabelRotation={-5}
+            verticalLabelRotation={20}
+            chartConfig={{
+              backgroundColor: '#001233',
+              backgroundGradientFrom: '#001233',
+              backgroundGradientTo: '#001233',
+              decimalPlaces: 0, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 30,
+              },
+              propsForDots: {
+                r: '2',
+                strokeWidth: 5,
+                stroke: '#ffff3f',
+              },
+            }}
+            style={{
+              marginVertical: 8,
+              borderRadius: 10,
+              width: '100%',
+            }}
+          />
+        )}
       </Container>
     </>
   );
@@ -978,21 +1022,20 @@ const FourthRoute = () => {
   const [selectedSatker, setSelectedSatker] = useState(DataUser.id_kantor);
   const [pemohonPNBP, setPemohonPNBP] = useState([]);
   const [dataPerwilayahPnbp, setDataPerwilayahPnbp] = useState([]);
-  const [selectedTahun, setSelectedTahun] = useState(0);
+  const [selectedTahun, setSelectedTahun] = useState(new Date().getFullYear());
   const [tahunDropdown, setTahunDropdown] = useState([]);
-  const [tahunNow, setTahunNow] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const year = new Date().getFullYear();
-    setTahunNow(year)
-    const yearArr = []
+
+    const yearArr = [];
     for (let index = 0; index < 10; index++) {
-      const prevYear = year - index
-      yearArr.push(prevYear)
+      const prevYear = year - index;
+      yearArr.push(prevYear);
     }
     //console.log(year)
-    setTahunDropdown(yearArr)
+    setTahunDropdown(yearArr);
 
     getdataPnbpPnbp();
     GetSatker();
@@ -1021,7 +1064,7 @@ const FourthRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPerwilayahPnbp(data.data);
         //console.log(data.data)
@@ -1029,7 +1072,9 @@ const FourthRoute = () => {
       } else {
         //dispatch(setLoading(false));
       }
-    } catch (error) { dispatch(setLoading(false)); }
+    } catch (error) {
+      dispatch(setLoading(false));
+    }
   };
 
   const getPemohonPNBP = async () => {
@@ -1046,7 +1091,7 @@ const FourthRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setPemohonPNBP(data.data);
         dispatch(setLoading(false));
@@ -1069,7 +1114,7 @@ const FourthRoute = () => {
         headers,
       });
 
-      const { data, status } = response;
+      const {data, status} = response;
       if (status === 200) {
         const satker = data.data;
         const satkerArr = [];
@@ -1079,7 +1124,7 @@ const FourthRoute = () => {
         setSatkerDropdown(satkerArr);
         setSatker(data.data);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getdataPnbpPnbp = async () => {
@@ -1102,7 +1147,7 @@ const FourthRoute = () => {
         },
       );
 
-      const { status, data } = response;
+      const {status, data} = response;
       if (status === 200) {
         setDataPnbpPnbp(data.data);
         dispatch(setLoading(false));
@@ -1142,27 +1187,27 @@ const FourthRoute = () => {
     <>
       <Container>
         <Line />
-        {DataUser.id_kantor == 99 ? (
+        {DataUser.id_kantor === 99 ? (
           <PickerContainer>
-          <Picker
-            selectedValue={selectedSatker}
-            onValueChange={(itemValue, itemPosition) =>
-              setSelectedSatker(itemValue)
-            }>
-            <Picker.Item value={99} label="SEMUA SATUAN KERJA" />
-            {satkerDropdown.map((item, index) => (
-              <Picker.Item
-                key={index}
-                label={item.nama_kantor}
-                value={item.id_kantor}
-              />
-            ))}
-          </Picker>
-        </PickerContainer>
+            <Picker
+              selectedValue={selectedSatker}
+              onValueChange={(itemValue, itemPosition) =>
+                setSelectedSatker(itemValue)
+              }>
+              <Picker.Item value={99} label="SEMUA SATUAN KERJA" />
+              {satkerDropdown.map((item, index) => (
+                <Picker.Item
+                  key={index}
+                  label={item.nama_kantor}
+                  value={item.id_kantor}
+                />
+              ))}
+            </Picker>
+          </PickerContainer>
         ) : (
           <Text>{DataUser.nama_kantor}</Text>
         )}
-        
+
         <Text>PNBP Lainnya</Text>
         {dataPnbpPnbp.length > 0 ? (
           <LineChart
@@ -1181,9 +1226,10 @@ const FourthRoute = () => {
             xLabelsOffset={8}
             horizontalLabelRotation={-5}
             verticalLabelRotation={20}
-            onDataPointClick={({ value, index }) => {
-              const message = `${dataPnbpPnbp[index].periode
-                } - ${numberWithCommas(value)}`;
+            onDataPointClick={({value, index}) => {
+              const message = `${
+                dataPnbpPnbp[index].periode
+              } - ${numberWithCommas(value)}`;
               //console.log(message);
               dispatch(
                 setToast({
@@ -1202,43 +1248,57 @@ const FourthRoute = () => {
             }}
           />
         ) : (
-            <LineChart
-              data={{
-                labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"],
-                datasets: [
-                  {
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  },
-                ],
-              }}
-              width={Dimensions.get('screen').width - 20} // from react-native
-              height={250}
-              yAxisInterval={1} // optional, defaults to 1
-              yLabelsOffset={-4}
-              xLabelsOffset={8}
-              horizontalLabelRotation={-5}
-              verticalLabelRotation={20}
-              onDataPointClick={({ value, index }) => {
-                const message = `${dataPnbpPnbp[index].periode
-                  } - ${numberWithCommas(value)}`;
-                //console.log(message);
-                dispatch(
-                  setToast({
-                    success: true,
-                    message,
-                    closeToast: () => dispatch(setToast(null)),
-                  }),
-                );
-              }}
-              chartConfig={chartConfig}
-              bezier
-              style={{
-                marginVertical: 8,
-                borderRadius: 10,
-                width: '100%',
-              }}
-            />
-          )}
+          <LineChart
+            data={{
+              labels: [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'Mei',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Okt',
+                'Nov',
+                'Des',
+              ],
+              datasets: [
+                {
+                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                },
+              ],
+            }}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={250}
+            yAxisInterval={1} // optional, defaults to 1
+            yLabelsOffset={-4}
+            xLabelsOffset={8}
+            horizontalLabelRotation={-5}
+            verticalLabelRotation={20}
+            onDataPointClick={({value, index}) => {
+              const message = `${
+                dataPnbpPnbp[index].periode
+              } - ${numberWithCommas(value)}`;
+              //console.log(message);
+              dispatch(
+                setToast({
+                  success: true,
+                  message,
+                  closeToast: () => dispatch(setToast(null)),
+                }),
+              );
+            }}
+            chartConfig={chartConfig}
+            bezier
+            style={{
+              marginVertical: 8,
+              borderRadius: 10,
+              width: '100%',
+            }}
+          />
+        )}
         <Line />
         <Text>Permohonan PNBP Lainnya 10 Hari Terkahir</Text>
         {pemohonPNBP.length > 0 ? (
@@ -1343,8 +1403,10 @@ const FourthRoute = () => {
               xLabelsOffset={1}
               horizontalLabelRotation={-5}
               verticalLabelRotation={20}
-              onDataPointClick={({ value, index }) => {
-                const message = `${dataPerwilayahPnbp[index].tahun} - ${dataPerwilayahPnbp[index].wilayah} - ${'Rp ' + numberWithCommas(value)}`;
+              onDataPointClick={({value, index}) => {
+                const message = `${dataPerwilayahPnbp[index].tahun} - ${
+                  dataPerwilayahPnbp[index].wilayah
+                } - ${'Rp ' + numberWithCommas(value)}`;
                 //console.log(message);
                 dispatch(
                   setToast({
@@ -1378,46 +1440,53 @@ const FourthRoute = () => {
             />
           </>
         ) : (
-            <LineChart
-              data={{
-                labels: ["Kabupaten Bangka", "Kabupaten Bangka Barat", "Kabupaten Bangka Selatan", "Kabupaten Belitung",
-                  "Kabupaten Belitung Timur", "Kota Pangkalpinang", "lainnya"],
-                datasets: [
-                  {
-                    data: [0, 0, 0, 0, 0, 0, 0],
-                  },
-                ],
-              }}
-              width={Dimensions.get('screen').width - 20} // from react-native
-              height={400}
-              yAxisInterval={1} // optional, defaults to 1
-              yLabelsOffset={20}
-              xLabelsOffset={-1}
-              horizontalLabelRotation={-5}
-              verticalLabelRotation={20}
-              chartConfig={{
-                backgroundColor: '#001233',
-                backgroundGradientFrom: '#001233',
-                backgroundGradientTo: '#001233',
-                decimalPlaces: 0, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                  borderRadius: 30,
+          <LineChart
+            data={{
+              labels: [
+                'Kabupaten Bangka',
+                'Kabupaten Bangka Barat',
+                'Kabupaten Bangka Selatan',
+                'Kabupaten Belitung',
+                'Kabupaten Belitung Timur',
+                'Kota Pangkalpinang',
+                'lainnya',
+              ],
+              datasets: [
+                {
+                  data: [0, 0, 0, 0, 0, 0, 0],
                 },
-                propsForDots: {
-                  r: '2',
-                  strokeWidth: 5,
-                  stroke: '#ffff3f',
-                },
-              }}
-              style={{
-                marginVertical: 8,
-                borderRadius: 10,
-                width: '100%',
-              }}
-            />
-          )}
+              ],
+            }}
+            width={Dimensions.get('screen').width - 20} // from react-native
+            height={400}
+            yAxisInterval={1} // optional, defaults to 1
+            yLabelsOffset={20}
+            xLabelsOffset={-1}
+            horizontalLabelRotation={-5}
+            verticalLabelRotation={20}
+            chartConfig={{
+              backgroundColor: '#001233',
+              backgroundGradientFrom: '#001233',
+              backgroundGradientTo: '#001233',
+              decimalPlaces: 0, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 30,
+              },
+              propsForDots: {
+                r: '2',
+                strokeWidth: 5,
+                stroke: '#ffff3f',
+              },
+            }}
+            style={{
+              marginVertical: 8,
+              borderRadius: 10,
+              width: '100%',
+            }}
+          />
+        )}
       </Container>
     </>
   );

@@ -112,9 +112,6 @@ export default function Administrasi() {
             if (responsePaspor.status === 200) {
               const dataByTanggal = responsePaspor.data.data;
 
-              let peopleSum = 0;
-              let totalSum = 0;
-
               for (const iterator of kategori) {
                 // console.log(iterator.child);
                 if (
@@ -122,6 +119,8 @@ export default function Administrasi() {
                   'DOKUMEN PERJALANAN REPUBLIK INDONESIA'
                 ) {
                   for (const item of iterator.child) {
+                    let peopleSum = 0;
+                    let totalSum = 0;
                     if (dataByTanggal.length !== 0) {
                       for (const iterator of dataByTanggal) {
                         if (item.id === iterator.id_jenis) {
@@ -159,11 +158,12 @@ export default function Administrasi() {
             // const {status, data} = responseIntal;
             if (responseIntal.status === 200) {
               const dataByTanggal = responseIntal.data.data;
-              let peopleSum = 0;
-              let totalSum = 0;
+
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'IZIN KEIMIGRASIAN') {
                   for (const kategoriItemChild of kategoriItem.child) {
+                    let peopleSum = 0;
+                    let totalSum = 0;
                     //console.log(kategoriItem.child);
                     if (kategoriItemChild.child.length !== 0) {
                       for (const item of kategoriItemChild.child) {
@@ -225,12 +225,12 @@ export default function Administrasi() {
             // const {status, data} = responseVisa;
             if (responseVisa.status === 200) {
               const dataByTanggal = responseVisa.data.data;
-              let peopleSum = 0;
-              let totalSum = 0;
 
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'VISA') {
                   for (const kategoriItemChild of kategoriItem.child) {
+                    let peopleSum = 0;
+                    let totalSum = 0;
                     if (kategoriItemChild.child.length !== 0) {
                       for (const item of kategoriItemChild.child) {
                         if (dataByTanggal.length !== 0) {
@@ -290,13 +290,13 @@ export default function Administrasi() {
             );
             if (responsePNBP.status === 200) {
               const dataByTanggal = responsePNBP.data.data;
-              let peopleSum = 0;
-              let totalSum = 0;
 
               //console.log('DATA BY TANGG', dataByTanggal);
               for (const kategoriItem of kategori) {
                 if (kategoriItem.nama_layanan === 'PNBP KEIMIGRASIAN LAINNYA') {
                   for (const kategoriItemChild of kategoriItem.child) {
+                    let peopleSum = 0;
+                    let totalSum = 0;
                     if (kategoriItemChild.child.length !== 0) {
                       //console.log('Item ada isi');
                       for (const iterator of kategoriItemChild.child) {
