@@ -216,71 +216,71 @@ export default function Administrasi() {
             }
             break;
 
-          case 'VISA':
-            const responseVisa = await Axios.post(
-              `${BASE_URL}/resources/visa-by/`,
-              body,
-              {headers},
-            );
-            // const {status, data} = responseVisa;
-            if (responseVisa.status === 200) {
-              const dataByTanggal = responseVisa.data.data;
+          // case 'VISA':
+          //   const responseVisa = await Axios.post(
+          //     `${BASE_URL}/resources/visa-by/`,
+          //     body,
+          //     {headers},
+          //   );
+          //   // const {status, data} = responseVisa;
+          //   if (responseVisa.status === 200) {
+          //     const dataByTanggal = responseVisa.data.data;
 
-              for (const kategoriItem of kategori) {
-                if (kategoriItem.nama_layanan === 'VISA') {
-                  for (const kategoriItemChild of kategoriItem.child) {
-                    let peopleSum = 0;
-                    let totalSum = 0;
-                    if (kategoriItemChild.child.length !== 0) {
-                      for (const item of kategoriItemChild.child) {
-                        if (dataByTanggal.length !== 0) {
-                          for (const itemByTanggal of dataByTanggal) {
-                            if (itemByTanggal.id_jenis === item.id) {
-                              item.laki = itemByTanggal.laki;
-                              item.perempuan = itemByTanggal.perempuan;
-                              item.total = itemByTanggal.total;
+          //     for (const kategoriItem of kategori) {
+          //       if (kategoriItem.nama_layanan === 'VISA') {
+          //         for (const kategoriItemChild of kategoriItem.child) {
+          //           let peopleSum = 0;
+          //           let totalSum = 0;
+          //           if (kategoriItemChild.child.length !== 0) {
+          //             for (const item of kategoriItemChild.child) {
+          //               if (dataByTanggal.length !== 0) {
+          //                 for (const itemByTanggal of dataByTanggal) {
+          //                   if (itemByTanggal.id_jenis === item.id) {
+          //                     item.laki = itemByTanggal.laki;
+          //                     item.perempuan = itemByTanggal.perempuan;
+          //                     item.total = itemByTanggal.total;
 
-                              peopleSum +=
-                                itemByTanggal.laki + itemByTanggal.perempuan;
-                              totalSum += itemByTanggal.total;
-                            }
-                          }
-                        } else {
-                          item.laki = 0;
-                          item.perempuan = 0;
-                          item.total = 0;
-                        }
-                      }
-                    } else {
-                      if (dataByTanggal.length !== 0) {
-                        for (const itemByTanggal of dataByTanggal) {
-                          if (itemByTanggal.id_jenis === kategoriItemChild.id) {
-                            kategoriItemChild.laki = itemByTanggal.laki;
-                            kategoriItemChild.perempuan =
-                              itemByTanggal.perempuan;
-                            kategoriItemChild.total = itemByTanggal.total;
+          //                     peopleSum +=
+          //                       itemByTanggal.laki + itemByTanggal.perempuan;
+          //                     totalSum += itemByTanggal.total;
+          //                   }
+          //                 }
+          //               } else {
+          //                 item.laki = 0;
+          //                 item.perempuan = 0;
+          //                 item.total = 0;
+          //               }
+          //             }
+          //           } else {
+          //             if (dataByTanggal.length !== 0) {
+          //               for (const itemByTanggal of dataByTanggal) {
+          //                 if (itemByTanggal.id_jenis === kategoriItemChild.id) {
+          //                   kategoriItemChild.laki = itemByTanggal.laki;
+          //                   kategoriItemChild.perempuan =
+          //                     itemByTanggal.perempuan;
+          //                   kategoriItemChild.total = itemByTanggal.total;
 
-                            peopleSum +=
-                              itemByTanggal.laki + itemByTanggal.perempuan;
-                            totalSum += itemByTanggal.total;
-                          }
-                        }
-                      } else {
-                        kategoriItemChild.laki = 0;
-                        kategoriItemChild.perempuan = 0;
-                        kategoriItemChild.total = 0;
-                      }
-                    }
-                    kategoriItemChild.people = peopleSum;
-                    kategoriItemChild.total_sum = totalSum;
-                  }
-                  setKategoriChild(kategoriItem.child);
-                }
-              }
+          //                   peopleSum +=
+          //                     itemByTanggal.laki + itemByTanggal.perempuan;
+          //                   totalSum += itemByTanggal.total;
+          //                 }
+          //               }
+          //             } else {
+          //               kategoriItemChild.laki = 0;
+          //               kategoriItemChild.perempuan = 0;
+          //               kategoriItemChild.total = 0;
+          //             }
+          //           }
+          //           kategoriItemChild.people = peopleSum;
+          //           kategoriItemChild.total_sum = totalSum;
+          //         }
+          //         setKategoriChild(kategoriItem.child);
+          //       }
+          //     }
 
-              dispatch(setLoading(false));
-            }
-            break;
+          //     dispatch(setLoading(false));
+          //   }
+          //   break;
 
           case 'PNBP KEIMIGRASIAN LAINNYA':
             const responsePNBP = await Axios.post(
