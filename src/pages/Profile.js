@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components/native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useDispatch, useSelector } from 'react-redux'
-import { setAccessToken } from '../store/actionCreator'
+import { setAccessToken, setUser } from '../store/actionCreator'
 
 export default function Profile() {
     const dispatch = useDispatch()
@@ -19,6 +19,7 @@ export default function Profile() {
                 <Name>{DataUser.name}</Name>
                 <Email>{DataUser.email}</Email>
                 <Kantor>{DataUser.nama_kantor}</Kantor>
+                <Kantor>{DataUser.id_kantor}</Kantor>
                 <Button onPress={Logout}>
                     <ButtonText>Keluar</ButtonText>
                 </Button>

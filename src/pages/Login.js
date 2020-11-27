@@ -8,22 +8,24 @@ import {Alert} from 'react-native';
 import {BASE_URL} from '../helpers/global';
 import {setLoading, setAccessToken, setUser} from '../store/actionCreator';
 
-export default function Login({ navigation }) {
+export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const emailRef = useRef();
-  const passwordRef = useRef();
   const dispatch = useDispatch();
 
   const getDataUser = async (id, token) => {
     try {
+      dispatch(setLoading(true));
+      
       const resUser = await axios.get(BASE_URL + '/resources/user/' + id, {
         headers: {Authorization: token},
       });
-      const {success, status, message, data} = resUser.data;
-
+      
+      const {data} = resUser.data;
+      console.log(data)
       dispatch(setUser(data));
+      dispatch(setLoading(false));
       // Alert.alert('', 'berhasil get data user');
     } catch (error) {
       //console.log(error.response);
@@ -41,20 +43,20 @@ export default function Login({ navigation }) {
       };
       const response = await axios.post(BASE_URL + '/login', body);
 
-      const {success, status, message, data} = response.data;
-      //console.log(success, status, data);
-      //if (success === true && status === 200) {
-
-      //alert("berhasil get token")
-      dispatch(setAccessToken(data.token));
+      const {code, data} = response.data;
       const id = data.id;
+      
       getDataUser(id, data.token);
-      dispatch(setLoading(false));
-      //}
+
+      if (code == 200) {
+      dispatch(setAccessToken(data.token));
+      Alert.alert('', 'Login Berhasil');
+      } else {
+        Alert.alert('gagal', code)
+      }
     } catch (error) {
-      //console.log(error.response);
-      //navigation.navigate('home')
       dispatch(setLoading(false));
+      console.log(error)
       Alert.alert('', 'Email atau password salah');
     }
   };

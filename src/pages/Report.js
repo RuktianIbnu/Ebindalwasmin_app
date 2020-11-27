@@ -14,6 +14,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default function Report() {
+  const DataUser = useSelector((state) => state.user);
   const [showAwal, setShowAwal] = useState(false);
   const [showAkhir, setShowAkhir] = useState(false);
   const [layanan, setLayanan] = useState([]);
@@ -22,7 +23,7 @@ export default function Report() {
   const [layananDropdown, setLayananDropdown] = useState([]);
   const [selectedLayanan, setSelectedLayanan] = useState('');
   const [satkerDropdown, setSatkerDropdown] = useState([]);
-  const [selectedSatker, setSelectedSatker] = useState('');
+  const [selectedSatker, setSelectedSatker] = useState(DataUser.id_kantor);
   const [selectedTanggalAwal, setSelectedTanggalAwal] = useState(new Date(Date.now()));
   const [selectedTanggalAkhir, setSelectedTanggalAkhir] = useState(new Date(Date.now()));
   const accessToken = useSelector((state) => state.accessToken);
@@ -209,11 +210,12 @@ export default function Report() {
           </Picker>
         </PickerContainer>
         <Text>Satuan Kerja</Text>
-        <PickerContainer>
+        {DataUser.id_kantor == 99 ? (
+          <PickerContainer>
           <Picker
             selectedValue={selectedSatker}
             onValueChange={(itemValue, _) => setSelectedSatker(itemValue)}>
-            <Picker.Item value={0} label="SEMUA SATUAN KERJA" />
+            <Picker.Item value={99} label="SEMUA SATUAN KERJA" />
             {satkerDropdown.map((item, index) => (
               <Picker.Item
                 key={index}
@@ -223,6 +225,9 @@ export default function Report() {
             ))}
           </Picker>
         </PickerContainer>
+        ) : (
+        <Text>{DataUser.nama_kantor}</Text>
+        )}
         <BottonContainer>
           <ButtonNext onPress={GetFilter}>
             <ButtonLabel>Cari</ButtonLabel>

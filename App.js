@@ -116,12 +116,13 @@ const Nav = () => {
   const loading = useSelector((state) => state.loading);
   const toast = useSelector((state) => state.toast);
   const accessToken = useSelector((state) => state.accessToken);
+  const dataUser = useSelector((state) => state.user);
   return (
     <>
       {/* <StatusBar hidden={loading} /> */}
       <NavigationContainer theme={MyTheme}>
         <Stack.Navigator>
-          {accessToken === null ? (
+          {accessToken === null && dataUser === null ? (
             <Stack.Screen
               name="login"
               component={Login}
