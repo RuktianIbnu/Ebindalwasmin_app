@@ -14,26 +14,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
-  const getDataUser = async (id, token) => {
-    try {
-      dispatch(setLoading(true));
-      
-      const resUser = await axios.get(BASE_URL + '/resources/user/' + id, {
-        headers: {Authorization: token},
-      });
-      
-      const {data} = resUser.data;
-      console.log(data)
-      dispatch(setUser(data));
-      dispatch(setLoading(false));
-      // Alert.alert('', 'berhasil get data user');
-    } catch (error) {
-      //console.log(error.response);
-      dispatch(setLoading(false));
-      Alert.alert(error);
-    }
-  };
-
   const submit = async () => {
     try {
       dispatch(setLoading(true));
@@ -43,20 +23,17 @@ export default function Login() {
       };
       const response = await axios.post(BASE_URL + '/login', body);
 
-      const {code, data} = response.data;
-      const id = data.id;
-      
-      getDataUser(id, data.token);
+      const {status, data} = response;
 
-      if (code == 200) {
-      dispatch(setAccessToken(data.token));
-      Alert.alert('', 'Login Berhasil');
-      } else {
-        Alert.alert('gagal', code)
+      if (status === 200) {
+        console.log(data.data.user);
+        dispatch(setUser(data.data.user));
+        dispatch(setAccessToken(data.data.token));
+        // Alert.alert('', 'Login Berhasil');
       }
     } catch (error) {
       dispatch(setLoading(false));
-      console.log(error)
+      console.log(error);
       Alert.alert('', 'Email atau password salah');
     }
   };
